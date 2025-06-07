@@ -33,8 +33,10 @@ class CharacterController implements interfaces.Controller {
 
   @httpPost('/', Auth.middleware())
   public async post(@requestBody() body: unknown, @response() res: Response) {
-    const data = characterSchema.parse(body)
-    res.status = await this.service.create(data)
+    // 从请求体中提取md内容
+    const { md, ...characterData } = body as { md?: string } & Record<string, unknown>
+    const data = characterSchema.parse(characterData)
+    res.status = await this.service.create(data, md)
   }
 
   @httpPut('/:id', Auth.middleware())
@@ -48,6 +50,17 @@ class CharacterController implements interfaces.Controller {
   public async delete(@requestParam('id') id: string, @response() res: Response) {
     await this.service.remove(Number(id))
     res.status = 204
+  }
+
+  /**
+   * 获取角色的MD设定
+   * @param id 角色ID
+   * @param res 响应对象
+   */
+  @httpGet('/:id/md')
+  public async getMd(@requestParam('id') id: string, @response() res: Response) {
+    const md = await this.service.getMd(Number(id))
+    res.body = md
   }
 }
 

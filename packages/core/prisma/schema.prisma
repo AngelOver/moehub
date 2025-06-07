@@ -89,3 +89,10 @@ enum bloodType {
   AB
   O
 }
+
+model CharacterMd {
+  id Int    @id @default(autoincrement())
+  md String? @db.Text
+
+  @@map("character_md")
+}

@@ -10,6 +10,7 @@ import { t } from '@/i18n'
 export type MoehubDataCharacterHandle = Omit<MoehubDataCharacterSubmit, 'birthday' | 'color'> & {
   birthday?: dayjs.Dayjs
   color?: { toHex(): string; cleared: false | string }
+  md?: string  // 添加角色设定字段
 }
 
 export function handleMoehubDataCharacter(values: MoehubDataCharacterHandle): MoehubDataCharacterSubmit {
@@ -63,6 +64,9 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[]) =
             <Radio value="NOVEL">{t`com.characterForm.seriesGenre.novel`}</Radio>
             <Radio value="OTHER">{t`com.characterForm.seriesGenre.other`}</Radio>
           </Radio.Group>
+        </Form.Item>
+        <Form.Item name="md" label="角色设定">
+          <Input.TextArea rows={6} placeholder="请输入角色设定内容，该内容会被保存为Markdown格式" />
         </Form.Item>
       </>
     )

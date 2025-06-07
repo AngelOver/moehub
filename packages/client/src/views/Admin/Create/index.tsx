@@ -9,7 +9,8 @@ const CreateView: React.FC = () => {
   const navigate = useNavigate()
 
   async function onSubmit(values: MoehubDataCharacterHandle) {
-    await createCharacter(handleMoehubDataCharacter(values))
+    const { md, ...characterData } = values;
+    await createCharacter(handleMoehubDataCharacter(characterData), md as string)
     notification.success({ message: t`view.characterCreate.success` })
     setTimeout(() => navigate(0), 500)
   }

@@ -1,14 +1,16 @@
-import { Card, Carousel, Descriptions, Flex, Image, Tag } from 'antd'
+import { Card, Carousel, Descriptions, Flex, Image, Tag, Button, message } from 'antd'
+import { DownloadOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
 import Loading from '@/components/Loading'
 import ErrorResult from '@/components/result/error'
 import styles from './styles.module.css'
 import useSWR from 'swr'
-import { getCharacter } from '@/http'
+import { getCharacter, getCharacterMd } from '@/http'
 import { useSelector } from 'react-redux'
 import { getSettings } from '@/store/settingsReducer'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import i18n, { t } from '@/i18n'
+import type { MoehubApiCharacter } from '@moehub/common'
 
 interface InfoCardProps {
   children: React.ReactNode
@@ -44,11 +46,82 @@ const CharacterView: React.FC = () => {
   const { id: characterId } = useParams()
   const { data, error, isLoading } = useSWR(`/api/character/${characterId}`, () => getCharacter(Number(characterId)))
   const { site_title } = useSelector(getSettings)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect(() => {
     if (data)
       document.title = `${['ja_JP', 'zh_CN', 'zh_TW'].includes(i18n.get()) ? data.name : data.romaji} - ${site_title}`
   }, [data, site_title])
+
+  const handleDownloadMd = async () => {
+    if (!data || !characterId) return
+    
+    try {
+      setIsDownloading(true)
+      
+      // 从API获取角色MD设定
+      let mdContent = ''
+      try {
+        mdContent = await getCharacterMd(Number(characterId))
+      } catch (err) {
+        console.error('Failed to fetch MD from API:', err)
+      }
+      
+      // 如果API返回的内容为空，则使用前端生成的内容作为备用
+      const finalMdContent = mdContent || generateCharacterMd(data)
+      
+      // 创建Blob对象
+      const blob = new Blob([finalMdContent], { type: 'text/markdown;charset=utf-8' })
+      
+      // 创建下载链接
+      const url = URL.createObjectURL(blob)
+      
+      // 创建临时a标签并触发下载
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${data.name}_character_profile.md`
+      document.body.appendChild(link)
+      link.click()
+      
+      // 清理
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
+      message.success(t`view.character.downloadSuccess`)
+    } catch (err) {
+      console.error('Download failed:', err)
+      message.error(t`view.character.downloadFailed`)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+  
+  // 生成基本角色设定MD
+  const generateCharacterMd = (character: MoehubApiCharacter['data']) => {
+    return `# ${character.name} / ${character.romaji}
+
+## ${t`view.character.whoAmI`}
+${character.description || ''}
+
+## ${t`view.character.myCharmPoints`}
+${character.tags ? character.tags.join(', ') : ''}
+
+${character.comment ? `## ${t`view.character.adminComment`}\n${character.comment}` : ''}
+
+## ${t`view.character.details`}
+- ${t`view.character.gender`}: ${character.gender !== 'FEMALE' ? GenderReflect[character.gender as keyof typeof GenderReflect] : '女性'}
+${character.age ? `- ${t`view.character.age`}: ${character.age}` : ''}
+${character.birthday ? `- ${t`view.character.birthday`}: ${new Date(character.birthday).getMonth() + 1}月${new Date(character.birthday).getDate()}日` : ''}
+${character.series ? `- ${t`view.character.sourceSeries`}: ${character.series}` : ''}
+${character.seriesGenre ? `- ${t`view.character.seriesType`}: ${SeriesGenreReflect[character.seriesGenre as keyof typeof SeriesGenreReflect]}` : ''}
+${character.voice ? `- ${t`view.character.voiceActor`}: ${character.voice}` : ''}
+${character.bloodType ? `- ${t`view.character.bloodType`}: ${character.bloodType}` : ''}
+${character.height ? `- ${t`view.character.height`}: ${character.height}cm` : ''}
+${character.weight ? `- ${t`view.character.weight`}: ${character.weight}kg` : ''}
+
+${character.hitokoto ? `## 一言\n「${character.hitokoto}」` : ''}
+`
+  }
 
   if (isLoading) return <Loading />
   if (error || !data) return <ErrorResult />
@@ -58,6 +131,15 @@ const CharacterView: React.FC = () => {
       <h1>{t`view.character.title`}</h1>
       <Flex justify="center" align="center" vertical>
         <Card hoverable className="card cardFixed">
+          <Button
+            type="primary"
+            className={styles.downloadButton}
+            onClick={handleDownloadMd}
+            loading={isDownloading}
+            icon={<DownloadOutlined />}
+          >
+            {t`view.character.downloadMd`}
+          </Button>
           {data.hitokoto ? (
             <div {...(data.color ? { style: { color: `#${data.color}` } } : {})} className={styles.hitokoto}>
               『{data.hitokoto}』

@@ -22,8 +22,8 @@ export async function getCharacters(): Promise<MoehubApiCharacters['data']> {
   return (await http.get('/character')).data
 }
 
-export function createCharacter(character: MoehubDataCharacterSubmit): Promise<MoehubApiBase<201>> {
-  return http.post('/character', character)
+export function createCharacter(character: MoehubDataCharacterSubmit, md?: string): Promise<MoehubApiBase<201>> {
+  return http.post('/character', { ...character, md })
 }
 
 export function updateCharacter(id: number, character: MoehubDataCharacterSubmit): Promise<MoehubApiBase<204>> {
@@ -84,4 +84,8 @@ export async function getImgs(): Promise<string[]> {
 
 export async function postEmail() {
   return (await http.post('/settings/email')).data
+}
+
+export async function getCharacterMd(id: number): Promise<string> {
+  return (await http.get(`/character/${id}/md`)).data
 }

@@ -32,7 +32,8 @@ function renderTimeline(date: string, content: string) {
 
 const HomeView: React.FC = () => {
   const { data, error, isLoading } = useSWR('/api/character', getCharacters)
-  const { home_description, home_buttons, home_timeline, home_custom } = useSelector(getSettings)
+  // 只保留实际使用的settings
+  useSelector(getSettings)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   // 获取所有标签
@@ -116,15 +117,14 @@ const HomeView: React.FC = () => {
         {/* 右侧角色列表 */}
         <Flex justify="start" wrap className={styles.characterList}>
           {filteredCharacters.map((item) => (
-            <Card
-              key={item.id}
-              hoverable
-              className={`card ${styles.characterCard}`}
-              cover={<Image src={(item.images as string[])[0]} className={styles.characterImage} alt={item.romaji} />}
-            >
-              <br />
-              <span>{}</span>
-              <Link to={`/character/${item.id}`}>
+            <Link to={`/character/${item.id}`} key={item.id} className={styles.characterLink}>
+              <Card
+                hoverable
+                className={`card ${styles.characterCard}`}
+                cover={<Image src={(item.images as string[])[0]} className={styles.characterImage} alt={item.romaji} />}
+              >
+                <br />
+                <span>{}</span>
                 <Card.Meta
                   title={item.name}
                   description={
@@ -135,8 +135,8 @@ const HomeView: React.FC = () => {
                       : ''
                   }
                 />
-              </Link>
-            </Card>
+              </Card>
+            </Link>
           ))}
           {filteredCharacters.length === 0 && (
             <div className={styles.noResults}>

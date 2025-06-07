@@ -60,3 +60,13 @@
   font-size: 16px;
   color: #999;
 }
+
+.characterLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.characterLink:hover {
+  text-decoration: none;
+}
