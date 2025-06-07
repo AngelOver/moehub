@@ -1,5 +1,5 @@
-import { Flex, Image, Card, Button } from 'antd'
-import React from 'react'
+import { Flex, Image, Card, Button, Checkbox, Typography, Space, Divider } from 'antd'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { getCharacters } from '@/http/index'
 import Loading from '@/components/Loading'
@@ -9,6 +9,8 @@ import useSWR from 'swr'
 import { getSettings } from '@/store/settingsReducer'
 import { useSelector } from 'react-redux'
 import { t } from '@/i18n'
+
+const { Title } = Typography
 
 function renderLinkBlock(link: string, text: string) {
   return (
@@ -31,52 +33,89 @@ function renderTimeline(date: string, content: string) {
 const HomeView: React.FC = () => {
   const { data, error, isLoading } = useSWR('/api/character', getCharacters)
   const { home_description, home_buttons, home_timeline, home_custom } = useSelector(getSettings)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+
+  // 获取所有标签
+  const allTags = useMemo(() => {
+    if (!data) return []
+    const tagSet = new Set<string>()
+    data.forEach((character) => {
+      if (Array.isArray(character.tags)) {
+        character.tags.forEach((tag) => tagSet.add(tag))
+      }
+    })
+    return Array.from(tagSet).sort()
+  }, [data])
+
+  const handleTagChange = (tag: string, checked: boolean) => {
+    setSelectedTags((prev) => {
+      if (checked) {
+        return [...prev, tag]
+      } else {
+        return prev.filter((t) => t !== tag)
+      }
+    })
+  }
+
+  const clearFilters = () => {
+    setSelectedTags([])
+  }
+
+  // 过滤角色列表
+  const filteredCharacters = useMemo(() => {
+    if (!data) return []
+    
+    return data
+      .filter((item) => {
+        // 基本过滤：有图片且不隐藏
+        const basicFilter = Array.isArray(item.images) && item.images.length > 0 && !item.hide
+        
+        // 标签过滤
+        const tagFilter = selectedTags.length === 0 ||
+          (Array.isArray(item.tags) && item.tags && selectedTags.every(tag => item.tags!.includes(tag)))
+        
+        return basicFilter && tagFilter
+      })
+      .reverse()
+      .sort((a, b) => (a.order ?? 50) - (b.order ?? 50))
+  }, [data, selectedTags])
 
   if (isLoading) return <Loading />
   if (error || !data) return <ErrorResult />
 
   return (
     <div>
-      <h1>{t`view.home.title`}</h1>
-      <Flex justify="center" wrap>
-        <Card className={`card ${styles.card}`}>
-          {/* biome-ignore lint: */}
-          <span dangerouslySetInnerHTML={{ __html: home_description }} />
-          <h2>
-            <strong>{t`view.home.aboutMe`}</strong>
-          </h2>
-          <div className="cardList">
-            {home_buttons.map(([text, link], index) => (
-              <React.Fragment key={Number(index)}>{renderLinkBlock(link, text)}</React.Fragment>
-            ))}
-          </div>
-        </Card>
-        <Card className={`card ${styles.card}`}>
-          <h2>
-            <strong>{t`view.home.timeline`}</strong>
-          </h2>
-          <ul>
-            {Array.from(home_timeline)
-              .reverse()
-              .map(([date, content], index) => (
-                <React.Fragment key={Number(index)}>{renderTimeline(date, content)}</React.Fragment>
-              ))}
-          </ul>
-        </Card>
-
-        <Card className={`card ${styles.card}`}>
-          {/* biome-ignore lint: */}
-          <div dangerouslySetInnerHTML={{ __html: home_custom }} />
-        </Card>
-      </Flex>
+         {/* 右侧角色列表 */}
+     
+     
 
       <h1>{t`view.home.characterList`}</h1>
-      <Flex justify="center" wrap className={styles.characterList}>
-        {data
-          .filter((item) => Array.isArray(item.images) && item.images.length > 0 && !item.hide)
-          .reverse()
-          .sort((a, b) => (a.order ?? 50) - (b.order ?? 50))
-          .map((item) => (
+      <Flex className={styles.mainContent}>
+        {/* 左侧筛选栏 */}
+        <div className={styles.filterSidebar}>
+          <Title level={4}>{t`view.home.tagFilter`}</Title>
+          <Button type="link" onClick={clearFilters} style={{ padding: '0 0 16px 0' }}>
+            {t`view.home.clearFilters`}
+          </Button>
+          <div className={styles.tagList}>
+            {allTags.map((tag) => (
+              <div key={tag} className={styles.tagItem}>
+                <Checkbox
+                  checked={selectedTags.includes(tag)}
+                  onChange={(e) => handleTagChange(tag, e.target.checked)}
+                >
+                  {tag}
+                </Checkbox>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <Divider type="vertical" style={{ height: 'auto' }} />
+        
+        {/* 右侧角色列表 */}
+        <Flex justify="start" wrap className={styles.characterList}>
+          {filteredCharacters.map((item) => (
             <Card
               key={item.id}
               hoverable
@@ -99,6 +138,12 @@ const HomeView: React.FC = () => {
               </Link>
             </Card>
           ))}
+          {filteredCharacters.length === 0 && (
+            <div className={styles.noResults}>
+              <p>{t`view.home.noResults`}</p>
+            </div>
+          )}
+        </Flex>
       </Flex>
     </div>
   )

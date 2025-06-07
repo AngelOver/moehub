@@ -21,8 +21,42 @@
   margin: 0.8vh 0.8vw;
 }
 
+.mainContent {
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filterSidebar {
+  min-width: 200px;
+  padding: 0 15px;
+  margin-right: 10px;
+}
+
+.tagList {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.tagItem {
+  margin-bottom: 8px;
+}
+
 .characterList {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   margin: 10px auto;
-  width: 1320px;
-  max-width: 95vw;
+  width: 100%;
+}
+
+.noResults {
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #999;
 }
