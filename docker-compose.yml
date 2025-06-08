@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # 后端服务端口
+      - "5173:5173"  # 前端服务端口（开发模式）
+    environment:
+      - DATABASE_URL=${DATABASE_URL}  # 使用环境变量传递远程数据库连接字符串
+      - NODE_ENV=production
+    volumes:
+      - ./packages/core/public:/app/packages/core/public
+    restart: unless-stopped
