@@ -21,3 +21,6 @@ packages/core/public/imgs/**/*.jpeg
 
 packages/core/public/assets/*
 packages/core/public/*.html
+packages/core/public/client/favicon.png
+packages/core/public/client/index.html
+packages/core/public/client/assets/

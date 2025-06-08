@@ -6,11 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # 后端服务端口
-      - "5173:5173"  # 前端服务端口（开发模式）
-    environment:
-      - DATABASE_URL=${DATABASE_URL}  # 使用环境变量传递远程数据库连接字符串
-      - NODE_ENV=production
+      - "5000:5000"  # 集成的前后端服务端口
     volumes:
-      - ./packages/core/public:/app/packages/core/public
+      # 移除静态文件挂载，避免覆盖容器内的静态文件
+      - ./.env:/app/.env  # 挂载根目录的环境变量文件
+      - ./.env:/app/packages/core/.env  # 挂载到core目录的环境变量文件
     restart: unless-stopped
