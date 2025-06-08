@@ -1,0 +1,10 @@
+# 排除所有node_modules目录
+**/node_modules
+**/.git
+**/.vscode
+**/dist
+**/build
+**/lib
+**/.DS_Store
+**/.env
+**/.env.local
