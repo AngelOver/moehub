@@ -1,58 +1,121 @@
-.card {
-  width: 380px;
-  max-width: 95vw;
-  margin: 10px;
-  font-size: 1.05rem;
+/* 标题样式 */
+.tagFilterTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  margin-top: 0;
+  color: #000;
+  text-align: center;
 }
 
-.card li {
-  list-style: none;
+/* 搜索框和筛选相关样式 */
+.searchWrapper {
+  margin-bottom: 15px;
 }
 
+.searchInput {
+  width: 100%;
+  font-size: 14px;
+}
+
+.clearBtnWrapper {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.clearFilterBtn {
+  padding: 0;
+  color: #1677ff;
+  font-size: 14px;
+  display: inline-block;
+}
+
+/* 主内容区布局 */
+.mainContent {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+/* 筛选侧边栏 */
+.filterSidebar {
+  padding: 0 10px;
+  border-right: 1px solid #f0f0f0;
+}
+
+/* 标签列表 - 移除所有高度限制 */
+.tagList {
+  overflow-y: auto;
+  padding-right: 5px;
+  max-height: none !important; /* 确保没有高度限制 */
+}
+
+.tagItem {
+  margin-bottom: 15px;
+}
+
+/* 标签样式 */
+.primaryTag {
+  color: #1677ff;
+  font-weight: 500;
+}
+
+.selectedTag {
+  color: #52c41a;
+}
+
+/* 移动设备上更紧凑的标签间距 */
+@media (max-width: 576px) {
+  .tagItem {
+    margin-bottom: 15px;
+    display: block;
+    font-size: 14px;
+  }
+  
+  .tagList {
+    /* 移除水平排列 */
+    display: block;
+    /* 移除最大高度限制，避免标签被截断 */
+    max-height: none !important;
+  }
+  
+  .primaryTag,
+  .selectedTag,
+  .tagItem :global(.ant-checkbox) + span {
+    font-size: 14px;
+  }
+  
+  .filterSidebar {
+    padding-bottom: 15px;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 15px;
+  }
+  
+  .searchWrapper {
+    margin-bottom: 10px;
+  }
+}
+
+/* 角色列表容器 */
+.characterListContainer {
+  padding: 0 10px;
+  border-left: 1px solid #f0f0f0;
+}
+
+/* 角色卡片样式 */
 .characterImage {
-  width: 200px;
   height: 300px !important;
   object-fit: cover;
 }
 
 .characterCard {
-  width: 220px;
-  max-height: 520px;
-  margin: 0.8vh 0.8vw;
+  height: 100%;
+  border: 1px solid #f0f0f0;
 }
 
-.mainContent {
-  display: flex;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.filterSidebar {
-  min-width: 200px;
-  padding: 0 15px;
-  margin-right: 10px;
-}
-
-.tagList {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding-right: 5px;
-}
-
-.tagItem {
-  margin-bottom: 8px;
-}
-
-.characterList {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 10px auto;
-  width: 100%;
-}
-
+/* 无结果提示 */
 .noResults {
   width: 100%;
   text-align: center;
@@ -61,6 +124,7 @@
   color: #999;
 }
 
+/* 链接样式 */
 .characterLink {
   text-decoration: none;
   color: inherit;
