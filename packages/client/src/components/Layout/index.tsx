@@ -1,5 +1,5 @@
 import { Flex, Layout as AntLayout, Avatar } from 'antd'
-import { PictureOutlined, PoweroffOutlined, TranslationOutlined } from '@ant-design/icons'
+import { PictureOutlined, PoweroffOutlined, TranslationOutlined, PlusOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import styles from './styles.module.css'
 import { useEffect } from 'react'
@@ -36,12 +36,17 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
       <Flex gap="middle" wrap>
         <AntLayout className={styles.layout}>
           <AntLayout.Header className={styles.header}>
-            <h1>
-              <Link className={styles.headerTitle} to="/">
-                <Avatar onClick={() => {}} style={{ marginRight: 10 }} src={settings.site_logo} />
-                {settings.site_name}
+            <div className={styles.headerLeft}>
+              <h1>
+                <Link className={styles.headerTitle} to="/">
+                  <Avatar onClick={() => {}} style={{ marginRight: 10 }} src={settings.site_logo} />
+                  {settings.site_name}
+                </Link>
+              </h1>
+              <Link to="/create" className={styles.createButton}>
+                创建角色
               </Link>
-            </h1>
+            </div>
             <div>
               <a
                 //  biome-ignore lint:

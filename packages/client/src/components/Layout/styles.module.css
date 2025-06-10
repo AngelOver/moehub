@@ -20,12 +20,57 @@
   line-height: 64px;
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.createButton {
+  display: inline-block;
+  background: linear-gradient(45deg, #ff7878, #ff5722);
+  color: white;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.4);
+  transition: all 0.3s;
+  margin-left: 15px;
+  text-decoration: none;
+  line-height: normal;
+}
+
+.createButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.6);
+}
+
 .header a {
   background: none;
 }
 
 .headerTitle {
   color: #eee;
+}
+
+/* 移动端响应式设置 */
+@media screen and (max-width: 768px) {
+  .createButton {
+    display: none; /* 在移动端隐藏头部的创建按钮 */
+  }
+  
+  .headerLeft {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .header {
+    height: auto;
+    padding: 10px 20px;
+    line-height: normal;
+  }
 }
 
 .content {

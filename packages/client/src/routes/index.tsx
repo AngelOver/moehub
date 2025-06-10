@@ -27,6 +27,11 @@ const routes: RouteConfig[] = [
     title: t`view.home.title`
   },
   {
+    path: '/create',
+    component: lazyLoader(() => import('@/views/Create')),
+    title: '创建角色'
+  },
+  {
     path: '/character/:id',
     component: lazyLoader(() => import('@/views/Character')),
     title: t`view.character.title`

@@ -17,6 +17,11 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true
         // 不需要重写路径，因为后端API已经配置了'/api'前缀
+      },
+      '/imgs': {
+        target: 'http://localhost:5000',
+        changeOrigin: true
+        // 将/imgs请求代理到后端服务器
       }
     }
   }

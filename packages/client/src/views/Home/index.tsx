@@ -1,4 +1,4 @@
-import { Flex, Image, Card, Button, Checkbox, Typography, Space, Divider, Input, Row, Col } from 'antd'
+import { Flex, Image, Card, Button, Checkbox, Typography, Space, Divider, Input, Row, Col, Tooltip } from 'antd'
 import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { getCharacters } from '@/http/index'
@@ -7,9 +7,10 @@ import ErrorResult from '@/components/result/error'
 import styles from './styles.module.css'
 import useSWR from 'swr'
 import { getSettings } from '@/store/settingsReducer'
+import { getToken } from '@/store/adminReducer'
 import { useSelector } from 'react-redux'
 import { t } from '@/i18n'
-import { SearchOutlined } from '@ant-design/icons'
+import { SearchOutlined, PlusCircleOutlined } from '@ant-design/icons'
 
 const { Title } = Typography
 const { Search } = Input
@@ -36,6 +37,8 @@ const HomeView: React.FC = () => {
   const { data, error, isLoading } = useSWR('/api/character', getCharacters)
   // 只保留实际使用的settings
   useSelector(getSettings)
+  // 获取管理员Token，用于判断是否显示添加按钮
+  const token = useSelector(getToken)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [searchText, setSearchText] = useState('')
 
@@ -116,7 +119,35 @@ const HomeView: React.FC = () => {
   if (error || !data) return <ErrorResult />
 
   return (
-    <div>
+    <div className={styles.homeContainer}>
+      {/* 创建角色按钮 - 仅管理员可见 */}
+      {token && (
+        <Tooltip title="管理员创建角色" placement="left">
+          <Link to="/admin/create" className={styles.createButton}>
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<PlusCircleOutlined />}
+              size="large"
+            />
+          </Link>
+        </Tooltip>
+      )}
+      
+      {/* 游客创建角色按钮 - 所有人可见 */}
+      <Tooltip title="创建新角色" placement="left">
+        <Link to="/create" className={styles.guestCreateButton}>
+          <Button
+            type="default"
+            shape="round"
+            icon={<PlusCircleOutlined />}
+            size="middle"
+          >
+            添加角色
+          </Button>
+        </Link>
+      </Tooltip>
+      
       <Row className={styles.mainContent}>
         {/* 左侧筛选栏 - 在大屏幕上占4列，小屏幕上占6列 */}
         <Col xs={6} sm={5} md={4} lg={4} xl={3} className={styles.filterSidebar}>
