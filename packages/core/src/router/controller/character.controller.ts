@@ -62,6 +62,19 @@ class CharacterController implements interfaces.Controller {
     const md = await this.service.getMd(Number(id))
     res.body = md
   }
+
+  /**
+   * 切换角色的显示/隐藏状态
+   * @param id 角色ID
+   * @param body 请求体，包含hide状态
+   * @param res 响应对象
+   */
+  @httpPut('/:id/hide', Auth.middleware())
+  public async toggleHide(@requestParam('id') id: string, @requestBody() body: unknown, @response() res: Response) {
+    const { hide } = body as { hide: boolean };
+    await this.service.toggleHide(Number(id), hide);
+    res.status = 204;
+  }
 }
 
 export default CharacterController

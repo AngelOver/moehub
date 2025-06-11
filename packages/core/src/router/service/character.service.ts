@@ -112,6 +112,23 @@ export class CharacterService {
   }
 
   /**
+   * 切换角色的显示/隐藏状态
+   * @param id 角色ID
+   * @param hide 是否隐藏
+   */
+  public async toggleHide(id: number, hide: boolean) {
+    /* 检查角色是否存在 */
+    const character = await this.db.character.findFirst({ where: { id } });
+    if (!character) throw new HttpError('Character not found', 404);
+    
+    /* 更新角色的hide状态 */
+    await this.db.character.update({
+      where: { id },
+      data: { hide }
+    });
+  }
+
+  /**
    * 获取角色的MD设定
    * @param id 角色ID
    * @returns 角色的MD设定文本

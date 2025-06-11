@@ -67,12 +67,15 @@ const ListView: React.FC = () => {
                 title="状态"
                 key="status"
                 render={(_, data: MoehubDataCharacter) => (
-                  <Switch
-                    checkedChildren="显示"
-                    unCheckedChildren="隐藏"
-                    checked={!data.hide}
-                    onChange={() => handleToggleVisibility(data.id, !!data.hide)}
-                  />
+                  <div className={styles.switchContainer}>
+                    <Switch
+                      checkedChildren="显示"
+                      unCheckedChildren="隐藏"
+                      checked={!data.hide}
+                      onChange={() => handleToggleVisibility(data.id, !!data.hide)}
+                      className={`${styles.visibilitySwitch} ${!data.hide ? styles.switchOn : styles.switchOff}`}
+                    />
+                  </div>
                 )}
               />
               <Column

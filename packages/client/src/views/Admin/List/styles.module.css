@@ -1,3 +1,41 @@
 .table {
   max-width: 95vw;
 }
+
+/* 开关容器样式 */
+.switchContainer {
+  display: flex;
+  justify-content: center;
+}
+
+/* 角色状态开关基础样式 */
+.visibilitySwitch {
+  font-weight: bold !important;
+  font-size: 14px !important;
+  width: 75px !important;
+  height: 28px !important;
+}
+
+/* 设置开关打开时的样式（显示状态） */
+.switchOn:global(.ant-switch) {
+  background-color: #52c41a !important;
+}
+
+/* 设置开关关闭时的样式（隐藏状态） */
+.switchOff:global(.ant-switch) {
+  background-color: #ff4d4f !important;
+}
+
+/* 调整开关内部文字样式 */
+.visibilitySwitch:global(.ant-switch .ant-switch-inner) {
+  color: white !important;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3) !important;
+  font-weight: bold !important;
+}
+
+/* 增加开关动画效果 */
+.visibilitySwitch:hover {
+  transform: scale(1.05);
+  transition: all 0.2s;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}

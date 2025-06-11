@@ -1,13 +1,3 @@
-/* 标题样式 */
-.tagFilterTitle {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 15px;
-  margin-top: 0;
-  color: #000;
-  text-align: center;
-}
-
 /* 搜索框和筛选相关样式 */
 .searchWrapper {
   margin-bottom: 15px;
@@ -36,11 +26,15 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 筛选侧边栏 */
 .filterSidebar {
   padding: 0 10px;
+  padding-top: 20px;
   border-right: 1px solid #f0f0f0;
 }
 

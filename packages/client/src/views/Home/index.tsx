@@ -42,14 +42,13 @@ const HomeView: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [searchText, setSearchText] = useState('')
 
-  // 获取所有标签并确保男性向和女性向始终存在且置顶
+  // 固定五个分类，排序不变
   const allTags = useMemo(() => {
-    if (!data) return ['男性向', '女性向']
+    if (!data) return ['女性向', '男性向', '热门', '原创', '其它']
     
-    const tagSet = new Set<string>()
-    // 首先添加固定的两个标签
-    tagSet.add('男性向')
-    tagSet.add('女性向')
+    // 固定的五个标签（按指定顺序）
+    const fixedTags = ['女性向', '男性向', '热门', '原创', '其它'];
+    const tagSet = new Set<string>(fixedTags);
     
     // 然后添加其他标签
     data.forEach((character) => {
@@ -58,17 +57,28 @@ const HomeView: React.FC = () => {
       }
     })
     
-    // 转换为数组，确保男性向和女性向在前两位
-    const tagsArray = Array.from(tagSet)
-    tagsArray.sort((a, b) => {
-      if (a === '男性向') return -1
-      if (b === '男性向') return 1
-      if (a === '女性向') return -1
-      if (b === '女性向') return 1
-      return a.localeCompare(b)
-    })
+    // 转换为数组，确保固定五个标签在前面且顺序不变
+    const tagsArray = Array.from(tagSet);
     
-    return tagsArray
+    // 自定义排序，保证固定标签的顺序
+    return tagsArray.sort((a, b) => {
+      const aIndex = fixedTags.indexOf(a);
+      const bIndex = fixedTags.indexOf(b);
+      
+      // 如果两个都是固定标签，按照fixedTags中的顺序排序
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex;
+      }
+      
+      // 如果只有a是固定标签，a排在前面
+      if (aIndex !== -1) return -1;
+      
+      // 如果只有b是固定标签，b排在前面
+      if (bIndex !== -1) return 1;
+      
+      // 两个都不是固定标签，按字母顺序排序
+      return a.localeCompare(b);
+    });
   }, [data])
 
   const handleTagChange = (tag: string, checked: boolean) => {
@@ -152,8 +162,6 @@ const HomeView: React.FC = () => {
         {/* 左侧筛选栏 - 在大屏幕上占4列，小屏幕上占6列 */}
         <Col xs={6} sm={5} md={4} lg={4} xl={3} className={styles.filterSidebar}>
           <div>
-            <div className={styles.tagFilterTitle}>標籤篩選</div>
-            
             {/* 搜索框 */}
             <div className={styles.searchWrapper}>
               <Input
@@ -184,7 +192,7 @@ const HomeView: React.FC = () => {
                     checked={selectedTags.includes(tag)}
                     onChange={(e) => handleTagChange(tag, e.target.checked)}
                     className={
-                      tag === '男性向' || tag === '女性向'
+                      ['女性向', '男性向', '热门', '原创', '其它'].includes(tag)
                         ? styles.primaryTag
                         : selectedTags.includes(tag)
                           ? styles.selectedTag
