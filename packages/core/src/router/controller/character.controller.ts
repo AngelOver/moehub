@@ -31,7 +31,7 @@ class CharacterController implements interfaces.Controller {
     res.body = await this.service.getAll()
   }
 
-  @httpPost('/', Auth.middleware())
+  @httpPost('/')
   public async post(@requestBody() body: unknown, @response() res: Response) {
     // 从请求体中提取md内容
     const { md, ...characterData } = body as { md?: string } & Record<string, unknown>

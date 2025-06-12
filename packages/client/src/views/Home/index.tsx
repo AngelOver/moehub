@@ -130,21 +130,7 @@ const HomeView: React.FC = () => {
 
   return (
     <div className={styles.homeContainer}>
-      {/* 创建角色按钮 - 仅管理员可见 */}
-      {token && (
-        <Tooltip title="管理员创建角色" placement="left">
-          <Link to="/admin/create" className={styles.createButton}>
-            <Button
-              type="primary"
-              shape="circle"
-              icon={<PlusCircleOutlined />}
-              size="large"
-            />
-          </Link>
-        </Tooltip>
-      )}
-      
-      {/* 游客创建角色按钮 - 所有人可见 */}
+      {/* 游客创建角色按钮 - 仅在移动端显示 */}
       <Tooltip title="创建新角色" placement="left">
         <Link to="/create" className={styles.guestCreateButton}>
           <Button

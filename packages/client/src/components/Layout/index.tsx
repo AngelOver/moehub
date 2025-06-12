@@ -88,6 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
               </Link>
             </div>
             <div>
+              {/* 只保留语言切换功能，隐藏相册集和后台入口 */}
               <a
                 //  biome-ignore lint:
                 onClick={() => {
@@ -97,12 +98,7 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
               >
                 <Avatar style={{ background: 'none', color: '#eee' }} icon={<TranslationOutlined />} />
               </a>
-              <Link to="/photos">
-                <Avatar style={{ background: 'none', color: '#eee' }} icon={<PictureOutlined />} />
-              </Link>
-              <Link to="/admin">
-                <Avatar style={{ background: 'none', color: '#eee' }} icon={<PoweroffOutlined />} />
-              </Link>
+              {/* 相册集和后台入口已隐藏 */}
             </div>
           </AntLayout.Header>
           <AntLayout.Content className={styles.content}>{outlet}</AntLayout.Content>
