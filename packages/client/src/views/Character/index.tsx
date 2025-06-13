@@ -1,5 +1,5 @@
-import { Card, Carousel, Descriptions, Flex, Image, Tag, Button, message } from 'antd'
-import { DownloadOutlined } from '@ant-design/icons'
+import { Card, Carousel, Descriptions, Flex, Image, Tag, Button, message, Tooltip } from 'antd'
+import { DownloadOutlined, CopyOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
 import Loading from '@/components/Loading'
 import ErrorResult from '@/components/result/error'
@@ -8,7 +8,7 @@ import useSWR from 'swr'
 import { getCharacter, getCharacterMd } from '@/http'
 import { useSelector } from 'react-redux'
 import { getSettings } from '@/store/settingsReducer'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import i18n, { t } from '@/i18n'
 import type { MoehubApiCharacter } from '@moehub/common'
 
@@ -47,11 +47,33 @@ const CharacterView: React.FC = () => {
   const { data, error, isLoading } = useSWR(`/api/character/${characterId}`, () => getCharacter(Number(characterId)))
   const { site_title } = useSelector(getSettings)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [mdContent, setMdContent] = useState('')
+  const [isMdLoading, setIsMdLoading] = useState(false)
 
   useEffect(() => {
     if (data)
       document.title = `${['ja_JP', 'zh_CN', 'zh_TW'].includes(i18n.get()) ? data.name : data.romaji} - ${site_title}`
-  }, [data, site_title])
+    // 角色详情加载完成后获取角色设定内容
+    const fetchMdContent = async () => {
+      if (data && characterId) {
+        try {
+          setIsMdLoading(true)
+          const content = await getCharacterMd(Number(characterId))
+          setMdContent(content || generateCharacterMd(data))
+        } catch (err) {
+          console.error('获取角色设定内容失败:', err)
+          // 如果API请求失败，使用前端生成的内容作为备用
+          setMdContent(generateCharacterMd(data))
+        } finally {
+          setIsMdLoading(false)
+        }
+      }
+    }
+    
+    if (data && characterId) {
+      fetchMdContent()
+    }
+  }, [data, site_title, characterId])
 
   const handleDownloadMd = async () => {
     if (!data || !characterId) return
@@ -79,7 +101,7 @@ const CharacterView: React.FC = () => {
       // 创建临时a标签并触发下载
       const link = document.createElement('a')
       link.href = url
-      link.download = `${data.name}_character_profile.md`
+      link.download = `${data.name}_character_profile.txt`
       document.body.appendChild(link)
       link.click()
       
@@ -168,6 +190,7 @@ ${character.hitokoto ? `## 一言\n「${character.hitokoto}」` : ''}
             <div>{data.name}</div>
             <div>{data.romaji}</div>
           </div>
+          
           <Descriptions layout="vertical" title={t`view.character.details`}>
             {data.gender !== 'FEMALE' && (
               <Descriptions.Item label={t`view.character.gender`}>{GenderReflect[data.gender]}</Descriptions.Item>
@@ -204,6 +227,35 @@ ${character.hitokoto ? `## 一言\n「${character.hitokoto}」` : ''}
               </Descriptions.Item>
             )}
           </Descriptions>
+          
+          {/* 角色设定文本框 */}
+          <InfoCard title={t`view.character.characterSetting` || "角色设定"}>
+            {isMdLoading ? (
+              <div>加载中...</div>
+            ) : (
+              <>
+                <div className={styles.mdDisplayBox}>
+                  {mdContent}
+                </div>
+                <div className={styles.copyButtonContainer}>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      navigator.clipboard.writeText(mdContent)
+                        .then(() => message.success('已复制到剪贴板'))
+                        .catch(err => {
+                          console.error('复制失败:', err);
+                          message.error('复制失败');
+                        });
+                    }}
+                  >
+                    复制内容
+                  </Button>
+                </div>
+              </>
+            )}
+          </InfoCard>
+          
           {data.description && <InfoCard title={t`view.character.whoAmI`}>{data.description}</InfoCard>}
           {data.tags && data.tags.length > 0 && (
             <InfoCard title={t`view.character.myCharmPoints`}>

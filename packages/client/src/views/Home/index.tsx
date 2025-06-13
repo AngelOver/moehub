@@ -1,5 +1,6 @@
-import { Flex, Image, Card, Button, Checkbox, Typography, Space, Divider, Input, Row, Col, Tooltip } from 'antd'
-import React, { useState, useMemo } from 'react'
+import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout } from 'antd'
+import React, { useState, useMemo, useEffect } from 'react'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { getCharacters } from '@/http/index'
 import Loading from '@/components/Loading'
@@ -10,28 +11,10 @@ import { getSettings } from '@/store/settingsReducer'
 import { getToken } from '@/store/adminReducer'
 import { useSelector } from 'react-redux'
 import { t } from '@/i18n'
-import { SearchOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { SearchOutlined, PlusCircleOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons'
 
 const { Title } = Typography
-const { Search } = Input
-
-function renderLinkBlock(link: string, text: string) {
-  return (
-    <a href={link} target="_blank" rel="noreferrer">
-      <Button className="cardButton" ghost>
-        {text}
-      </Button>
-    </a>
-  )
-}
-
-function renderTimeline(date: string, content: string) {
-  return (
-    <li>
-      <strong>{date}</strong> {content}
-    </li>
-  )
-}
+const { Sider, Content } = Layout;
 
 const HomeView: React.FC = () => {
   const { data, error, isLoading } = useSWR('/api/character', getCharacters)
@@ -41,6 +24,24 @@ const HomeView: React.FC = () => {
   const token = useSelector(getToken)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [searchText, setSearchText] = useState('')
+  const [mobileMenuCollapsed, setMobileMenuCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  
+  // 监听窗口大小变化
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    // 初始检查
+    checkIfMobile()
+    
+    // 添加窗口大小变化监听
+    window.addEventListener('resize', checkIfMobile)
+    
+    // 清理函数
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [])
 
   // 固定五个分类，排序不变
   const allTags = useMemo(() => {
@@ -128,8 +129,24 @@ const HomeView: React.FC = () => {
   if (isLoading) return <Loading />
   if (error || !data) return <ErrorResult />
 
+  const toggleMobileMenu = () => {
+    setMobileMenuCollapsed(!mobileMenuCollapsed)
+  }
+
   return (
     <div className={styles.homeContainer}>
+      {/* 移动端菜单折叠按钮 - 仅在移动端显示 */}
+      {isMobile && (
+        <div className={styles.mobileMenuToggle}>
+          <Button
+            type="primary"
+            onClick={toggleMobileMenu}
+          >
+            {mobileMenuCollapsed ? "展开筛选" : "折叠筛选"}
+          </Button>
+        </div>
+      )}
+
       {/* 游客创建角色按钮 - 仅在移动端显示 */}
       <Tooltip title="创建新角色" placement="left">
         <Link to="/create" className={styles.guestCreateButton}>
@@ -144,57 +161,73 @@ const HomeView: React.FC = () => {
         </Link>
       </Tooltip>
       
-      <Row className={styles.mainContent}>
-        {/* 左侧筛选栏 - 在大屏幕上占4列，小屏幕上占6列 */}
-        <Col xs={6} sm={5} md={4} lg={4} xl={3} className={styles.filterSidebar}>
-          <div>
-            {/* 搜索框 */}
-            <div className={styles.searchWrapper}>
-              <Input
-                placeholder="名称查询"
-                allowClear
-                suffix={<SearchOutlined />}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onPressEnter={() => handleSearch(searchText)}
-                className={styles.searchInput}
-              />
-            </div>
-            
-            {/* 清除按钮单独一行，居中显示 */}
+      <Layout className={styles.mainLayout}>
+        {/* 左侧筛选菜单 */}
+        <Sider width={220} className={`${styles.menuSider} ${isMobile && mobileMenuCollapsed ? styles.menuCollapsed : ''}`} theme="light">
+          {/* 搜索框 */}
+          <div className={styles.searchWrapper}>
+            <Input
+              placeholder="搜索角色..."
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onPressEnter={() => handleSearch(searchText)}
+              className={styles.searchInput}
+              bordered={true}
+            />
+          </div>
+          
+          {/* 菜单 */}
+          <Menu
+            mode="inline"
+            className={styles.mainMenu}
+            defaultOpenKeys={['filter', 'tags']}
+            items={[
+              {
+                key: 'filter',
+                label: '筛选',
+                icon: <FilterOutlined />,
+                children: allTags
+                  .filter(tag => ['女性向', '男性向', '热门', '原创', '其它'].includes(tag))
+                  .map((tag) => ({
+                    key: tag,
+                    label: tag,
+                    className: selectedTags.includes(tag) ? styles.menuItemActive : '',
+                    onClick: () => handleTagChange(tag, !selectedTags.includes(tag))
+                  }))
+              },
+              {
+                key: 'tags',
+                label: '标签',
+                children: allTags
+                  .filter(tag => !['女性向', '男性向', '热门', '原创', '其它'].includes(tag))
+                  .map((tag) => ({
+                    key: tag,
+                    label: tag,
+                    className: selectedTags.includes(tag) ? styles.menuItemActive : '',
+                    onClick: () => handleTagChange(tag, !selectedTags.includes(tag))
+                  }))
+              }
+            ]}
+          />
+          
+          {/* 清除筛选按钮 */}
+          {(selectedTags.length > 0 || searchText) && (
             <div className={styles.clearBtnWrapper}>
               <Button
-                type="link"
+                type="text"
+                icon={<ClearOutlined />}
                 onClick={clearFilters}
                 className={styles.clearFilterBtn}
               >
                 清除筛选
               </Button>
             </div>
-            <div className={styles.tagList}>
-              {allTags.map((tag) => (
-                <div key={tag} className={styles.tagItem}>
-                  <Checkbox
-                    checked={selectedTags.includes(tag)}
-                    onChange={(e) => handleTagChange(tag, e.target.checked)}
-                    className={
-                      ['女性向', '男性向', '热门', '原创', '其它'].includes(tag)
-                        ? styles.primaryTag
-                        : selectedTags.includes(tag)
-                          ? styles.selectedTag
-                          : ''
-                    }
-                  >
-                    {tag}
-                  </Checkbox>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Col>
+          )}
+        </Sider>
         
-        {/* 右侧角色列表 - 在大屏幕上占20列，小屏幕上占18列 */}
-        <Col xs={18} sm={19} md={20} lg={20} xl={21}>
+        {/* 右侧内容区域 */}
+        <Content className={styles.contentArea}>
           <div className={styles.characterListContainer}>
             <Row gutter={[16, 16]} className={styles.characterList}>
               {filteredCharacters.map((item) => (
@@ -229,8 +262,8 @@ const HomeView: React.FC = () => {
               )}
             </Row>
           </div>
-        </Col>
-      </Row>
+        </Content>
+      </Layout>
     </div>
   )
 }

@@ -1,18 +1,19 @@
 ::selection {
-  background-color: #227d51bb;
+  background-color: rgba(24, 144, 255, 0.3);
 }
 
 a {
-  color: #227d51;
+  color: #1890ff;
 }
 
 a:hover {
-  background-color: #096148;
+  background-color: transparent;
+  color: #40a9ff;
 }
 
 a::selection {
   color: #333;
-  background-color: #096148;
+  background-color: rgba(24, 144, 255, 0.3);
 }
 
 .card {
@@ -32,7 +33,7 @@ a::selection {
 }
 
 .cardButton:hover {
-  background-color: #227d51 !important;
+  background-color: #1890ff !important;
   color: #fff !important;
 }
 

@@ -33,7 +33,6 @@ const GuestCreateView: React.FC = () => {
 
   return (
     <div className={styles["guest-create-container"]}>
-      <h1>创建角色</h1>
       <p className={styles.description}>创建您喜欢的角色，提交后将由管理员审核</p>
       <Flex justify="center" align="center" vertical>
         <Card hoverable className={`${styles.card} ${styles.cardFixed}`}>

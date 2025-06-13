@@ -1,14 +1,16 @@
 .guest-create-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px 20px; /* 减小上下内边距 */
 }
 
 .description {
-  color: #666;
+  color: #f5222d; /* 红色 */
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 16px;
+  margin: 8px 0 12px; /* 减小上下间距 */
+  font-size: 12px; /* 进一步减小字体 */
+  font-weight: normal;
+  line-height: 1.2; /* 减小行高 */
 }
 
 .card {

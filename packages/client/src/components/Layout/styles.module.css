@@ -8,22 +8,181 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: all 0.8s ease-in-out;
+  filter: saturate(1.1) brightness(1.05);
+}
+
+/* 背景图片上添加粒子动画 */
+.background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 159, 243, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 80% 40%, rgba(190, 174, 226, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 40% 70%, rgba(163, 238, 255, 0.1) 0%, transparent 20%);
+  animation: backgroundShimmer 15s infinite alternate ease-in-out;
+}
+
+@keyframes backgroundShimmer {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  color: #eee;
-  background-color: #227d51;
+  align-items: center;
+  color: #333;
+  background-color: #f8f9fc;
   height: 64px;
-  padding-inline: 48px;
+  padding-inline: 24px;
   line-height: 64px;
+  box-shadow: 0 2px 8px rgba(190, 174, 226, 0.15);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #e8e8e8;
 }
+
+/* 移除彩色渐变条 */
 
 .headerLeft {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-shrink: 0;
+}
+
+.siteName {
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.headerMenu {
+  background-color: transparent;
+  border-bottom: none !important;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 20px;
+}
+
+.menuLink {
+  color: #333;
+  text-decoration: none;
+}
+
+/* 菜单样式 */
+.headerMenu :global(.ant-menu-item) {
+  margin: 0 8px;
+  border-radius: 4px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  color: #333;
+}
+
+/* 创建角色菜单项特殊样式 */
+.createMenuItem {
+  background: rgba(66, 133, 244, 0.07);
+  margin-left: 8px !important;
+  border-radius: 4px !important;
+  color: #333 !important;
+}
+
+.createMenuItem a {
+  color: #333 !important;
+  font-weight: 500;
+}
+
+.createMenuItem :global(.anticon) {
+  color: #4285f4 !important;
+}
+
+/* 菜单项悬停效果 */
+.headerMenu :global(.ant-menu-item:hover:not(.createMenuItem)) {
+  color: #333;
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.headerMenu :global(.createMenuItem:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(66, 133, 244, 0.2);
+  background-color: rgba(66, 133, 244, 0.1);
+}
+
+/* 选中菜单项的样式 */
+.headerMenu :global(.ant-menu-item-selected:not(.createMenuItem)) {
+  color: #1890ff !important;
+  font-weight: 500;
+}
+
+/* 添加选中指示器动画 */
+.headerMenu :global(.ant-menu-item-selected:not(.createMenuItem)::after) {
+  border-bottom: 2px solid #1890ff !important;
+  animation: menuIndicator 0.3s ease-out forwards;
+}
+
+.headerMenu :global(.createMenuItem.ant-menu-item-selected) {
+  background: rgba(66, 133, 244, 0.1) !important;
+  color: #1890ff !important;
+}
+
+@keyframes menuIndicator {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+/* 菜单项图标的悬停效果 */
+.headerMenu :global(.ant-menu-item:hover:not(.createMenuItem) .anticon) {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.headerMenu :global(.anticon) {
+  transition: all 0.3s ease;
+  margin-right: 6px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.langButton,
+.adminButton {
+  color: #666;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.langButton:hover,
+.adminButton:hover {
+  color: #1890ff;
+  background: rgba(24, 144, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .createButton {
@@ -107,30 +266,35 @@
   animation-play-state: paused; /* 悬停时暂停动画 */
 }
 
-.header a {
-  background: none;
+.headerTitle {
+  color: #333;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
-.headerTitle {
-  color: #eee;
+.headerTitle:hover {
+  color: #333;
+  transform: scale(1.03);
 }
 
 /* 移动端响应式设置 */
 @media screen and (max-width: 768px) {
-  .createButton {
-    display: none; /* 在移动端隐藏头部的创建按钮 */
+  .header {
+    padding: 0 10px;
+  }
+  
+  .headerMenu {
+    display: none; /* 在移动端隐藏水平菜单 */
+  }
+  
+  .siteName {
+    font-size: 16px; /* 移动端站点名称字体稍小 */
   }
   
   .headerLeft {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  
-  .header {
-    height: auto;
-    padding: 10px 20px;
-    line-height: normal;
+    flex: 1;
   }
 }
 
@@ -138,17 +302,95 @@
   min-height: 120px;
   line-height: 120px;
   overflow: initial;
+  position: relative;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 添加页面切换效果 */
+.content::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(190, 174, 226, 0.3);
+  opacity: 0.8;
 }
 
 .footer {
   margin-top: 20px;
-  color: #eee;
-  background-color: #333;
+  color: #666;
+  background-color: #f8f9fc;
+  border-top: 1px solid #e8e8e8;
+  padding: 16px 0;
+  position: relative;
+  overflow: hidden;
 }
+
+/* 移除页脚彩色渐变条 */
 
 .layout {
   text-align: center;
-  border-radius: 8px;
+  border-radius: 0;
   min-height: 100vh;
-  background-color: #ffffff77;
+  background-color: rgba(255, 255, 255, 0.85);
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+/* 添加装饰性气泡元素，提升动漫风格 */
+.layout::before,
+.layout::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.2;
+}
+
+.layout::before {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #FF9FF3, transparent 70%);
+  top: -100px;
+  right: -100px;
+  animation: float 15s infinite alternate ease-in-out;
+}
+
+.layout::after {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #BEAEE2, transparent 70%);
+  bottom: -50px;
+  left: -50px;
+  animation: float 12s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -20px) scale(1.05);
+  }
+  100% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
 }

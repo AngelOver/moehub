@@ -1,101 +1,135 @@
-/* 搜索框和筛选相关样式 */
+/* 整体容器样式 */
+.homeContainer {
+  position: relative;
+  min-height: 100%;
+}
+
+/* 主布局 */
+.mainLayout {
+  width: 100%;
+  background-color: transparent;
+  margin: 0 auto;
+  position: relative;
+  min-height: calc(100vh - 120px);
+}
+
+/* 左侧菜单样式 */
+.menuSider {
+  background: #f8f9fc;
+  border: 1px solid #e8e8e8;
+  margin-right: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: auto;
+  position: relative;
+  height: 100%;
+  min-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 移除装饰元素 */
+
+/* 搜索框样式 */
 .searchWrapper {
-  margin-bottom: 15px;
+  padding: 16px;
+  border-bottom: 1px solid #e8e8e8;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .searchInput {
   width: 100%;
   font-size: 14px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
 }
 
+.searchInput:hover {
+  box-shadow: 0 0 8px rgba(197, 202, 233, 0.4);
+}
+
+.searchInput:focus {
+  box-shadow: 0 0 8px rgba(197, 202, 233, 0.6);
+  border-color: #5c6bc0;
+}
+
+/* 清除筛选按钮 */
 .clearBtnWrapper {
+  padding: 12px 16px;
+  border-top: 1px solid #e8e8e8;
   text-align: center;
-  margin-bottom: 30px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .clearFilterBtn {
-  padding: 0;
-  color: #1677ff;
+  color: #1890ff;
   font-size: 14px;
-  display: inline-block;
+  transition: all 0.3s ease;
 }
 
-/* 主内容区布局 */
-.mainContent {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 10px;
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.clearFilterBtn:hover {
+  color: #5c6bc0;
+  transform: scale(1.05);
+  background: rgba(197, 202, 233, 0.3);
 }
 
-/* 筛选侧边栏 */
-.filterSidebar {
-  padding: 0 10px;
-  padding-top: 20px;
-  border-right: 1px solid #f0f0f0;
-}
-
-/* 标签列表 - 移除所有高度限制 */
-.tagList {
+/* 主菜单样式 */
+.mainMenu {
+  border-right: none !important;
+  flex: 1 1 auto;
+  transition: all 0.3s ease;
+  height: auto;
   overflow-y: auto;
-  padding-right: 5px;
-  max-height: none !important; /* 确保没有高度限制 */
 }
 
-.tagItem {
-  margin-bottom: 15px;
-}
-
-/* 标签样式 */
-.primaryTag {
-  color: #1677ff;
+.mainMenu :global(.ant-menu-submenu-title) {
+  font-size: 14px;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.selectedTag {
-  color: #52c41a;
+.mainMenu :global(.ant-menu-submenu-title:hover) {
+  color: #1890ff;
+  background-color: #f5f5f5;
 }
 
-/* 移动设备上更紧凑的标签间距 */
-@media (max-width: 576px) {
-  .tagItem {
-    margin-bottom: 15px;
-    display: block;
-    font-size: 14px;
-  }
-  
-  .tagList {
-    /* 移除水平排列 */
-    display: block;
-    /* 移除最大高度限制，避免标签被截断 */
-    max-height: none !important;
-  }
-  
-  .primaryTag,
-  .selectedTag,
-  .tagItem :global(.ant-checkbox) + span {
-    font-size: 14px;
-  }
-  
-  .filterSidebar {
-    padding-bottom: 15px;
-    border-right: none;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 15px;
-  }
-  
-  .searchWrapper {
-    margin-bottom: 10px;
-  }
+.mainMenu :global(.ant-menu-item) {
+  transition: all 0.3s ease;
+  margin: 4px 0;
+  border-radius: 4px;
+  margin-right: 8px;
 }
+
+.mainMenu :global(.ant-menu-item:hover) {
+  color: #1890ff;
+  background-color: #f5f5f5;
+  transform: translateX(4px);
+}
+
+/* 菜单项激活样式 */
+.menuItemActive {
+  color: #1890ff !important;
+  background: #f5f5f5;
+  border-right: 3px solid #1890ff;
+}
+
+/* 右侧内容区域 */
+.contentArea {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+}
+
+/* 移除装饰元素 */
 
 /* 角色列表容器 */
 .characterListContainer {
-  padding: 0 10px;
-  border-left: 1px solid #f0f0f0;
+  padding: 0;
 }
 
 /* 角色卡片样式 */
@@ -106,7 +140,45 @@
 
 .characterCard {
   height: 100%;
-  border: 1px solid #f0f0f0;
+  border: 1px solid #e8e8e8;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.characterCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #d9d9d9;
+}
+
+/* 图片悬停效果 */
+.characterCard:hover .characterImage {
+  transform: scale(1.08);
+  filter: brightness(1.05);
+}
+
+.characterImage {
+  transition: all 0.5s ease;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 角色卡片元数据样式 */
+.characterCard :global(.ant-card-meta-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.characterCard:hover :global(.ant-card-meta-title) {
+  color: #1890ff;
+}
+
+.characterCard :global(.ant-card-meta-description) {
+  font-size: 14px;
+  color: #666;
 }
 
 /* 无结果提示 */
@@ -129,37 +201,13 @@
   text-decoration: none;
 }
 
-/* 容器相对定位，作为固定按钮的参考 */
-.homeContainer {
-  position: relative;
-  min-height: 100%;
-}
-
-/* 管理员创建按钮固定在右下角 */
-.createButton {
-  position: fixed;
-  right: 30px;
-  bottom: 30px;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.createButton button {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
-
 /* 游客创建按钮固定在右下角，默认在PC端隐藏 */
 .guestCreateButton {
   position: fixed;
   right: 30px;
   bottom: 30px;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(197, 202, 233, 0.3);
   transition: all 0.3s;
   display: none; /* PC端默认隐藏 */
 }
@@ -179,6 +227,51 @@
 
 /* 移动端样式 */
 @media screen and (max-width: 768px) {
+  /* 移动端菜单折叠按钮 - 悬浮样式 */
+  .mobileMenuToggle {
+    display: none; /* PC端默认隐藏 */
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 1000;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+  }
+  
+  .mobileMenuToggle:hover {
+    transform: translateY(-5px);
+  }
+  
+  .mobileMenuToggle button {
+    background: linear-gradient(45deg, #4285f4, #1890ff);
+    border: none;
+    color: white;
+    height: 40px;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .menuSider {
+    position: fixed !important;
+    left: 0;
+    top: 64px;
+    height: calc(100vh - 64px);
+    z-index: 999;
+    transform: translateX(0); /* 默认显示 */
+    transition: all 0.3s ease;
+    width: 140px !important; /* 减小移动端宽度 */
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  /* 菜单折叠状态 */
+  .menuCollapsed {
+    display: none !important; /* 完全隐藏 */
+  }
+  
   .guestCreateButton {
     display: block; /* 移动端显示 */
   }
@@ -191,5 +284,48 @@
     padding: 0 15px;
     height: 40px;
     border-radius: 20px;
+  }
+  
+  .contentArea {
+    padding: 10px;
+    margin-left: 140px; /* 与菜单宽度保持一致 */
+    width: calc(100% - 140px); /* 确保宽度正确 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+  }
+  
+  /* 确保PC端样式不变 */
+  @media screen and (min-width: 769px) {
+    .menuSider {
+      display: block !important; /* 确保PC端菜单始终显示 */
+      width: 220px !important;
+      position: relative !important;
+      top: auto;
+      left: auto;
+      transform: none !important;
+    }
+    
+    .contentArea {
+      margin-left: 0;
+      width: auto;
+    }
+  }
+  
+  /* 移动端 - 菜单折叠生效 */
+  @media screen and (max-width: 768px) {
+    .mobileMenuToggle {
+      display: block; /* 移动端显示折叠按钮 */
+    }
+    
+    /* 菜单折叠时内容区域占满 */
+    .menuCollapsed ~ .contentArea,
+    .menuSider:not(.visible) ~ .contentArea {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+    
+    /* 优化折叠后的内容显示 */
+    .contentArea {
+      padding: 10px 5px;
+    }
   }
 }

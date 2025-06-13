@@ -1,8 +1,8 @@
-import { Flex, Layout as AntLayout, Avatar } from 'antd'
-import { PictureOutlined, PoweroffOutlined, TranslationOutlined, PlusOutlined } from '@ant-design/icons'
-import { Link, useNavigate } from 'react-router-dom'
+import { Flex, Layout as AntLayout, Avatar, Menu, Button } from 'antd'
+import { PictureOutlined, PoweroffOutlined, TranslationOutlined, PlusOutlined, HomeOutlined, UserAddOutlined } from '@ant-design/icons'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import styles from './styles.module.css'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getToken, nextLanguage } from '@/store/adminReducer'
 import { getCurrentBackground, getSettings } from '@/store/settingsReducer'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,6 +45,31 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
     if (isPrivate && !isLogged) navigate('/admin/login')
   }, []);
 
+  const location = useLocation();
+  const [current, setCurrent] = useState('home');
+  
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') setCurrent('home');
+    else if (path === '/create') setCurrent('create');
+  }, [location]);
+
+  // 菜单项配置
+  const menuItems = [
+    {
+      key: 'home',
+      icon: <HomeOutlined />,
+      label: '首页',
+      link: '/'
+    },
+    {
+      key: 'create',
+      icon: <UserAddOutlined />,
+      label: '创建角色',
+      link: '/create'
+    }
+  ];
+
   return (
     <>
       <div
@@ -57,48 +82,40 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
         <AntLayout className={styles.layout}>
           <AntLayout.Header className={styles.header}>
             <div className={styles.headerLeft}>
-              <h1>
-                <Link className={styles.headerTitle} to="/">
-                  <Avatar onClick={() => {}} style={{ marginRight: 10 }} src={settings.site_logo} />
-                  {settings.site_name}
-                </Link>
-              </h1>
-              <Link
-                to="/create"
-                className={styles.createButton}
-                style={{
-                  display: 'inline-block',
-                  background: 'linear-gradient(45deg, #ff0000, #ffcc00)',
-                  color: 'white',
-                  padding: '6px 18px',
-                  borderRadius: '18px',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  boxShadow: '0 2px 8px rgba(255, 0, 0, 0.5), 0 0 12px rgba(255, 204, 0, 0.4)',
-                  textDecoration: 'none',
-                  lineHeight: 'normal',
-                  letterSpacing: '1px',
-                  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)',
-                  border: '1px solid rgba(255, 255, 255, 0.6)',
-                  animation: 'pulseButton 2s infinite alternate',
-                  margin: '0 10px'
-                }}
-              >
-                创建角色
+              <Link className={styles.headerTitle} to="/">
+                <Avatar style={{ marginRight: 10 }} src={settings.site_logo} />
+                <span className={styles.siteName}>{settings.site_name}</span>
               </Link>
             </div>
-            <div>
-              {/* 只保留语言切换功能，隐藏相册集和后台入口 */}
-              <a
-                //  biome-ignore lint:
+            
+            <Menu
+              mode="horizontal"
+              selectedKeys={[current]}
+              className={styles.headerMenu}
+              items={menuItems.map(item => ({
+                key: item.key,
+                icon: item.icon,
+                label: <Link to={item.link} className={styles.menuLink}>{item.label}</Link>,
+                className: item.key === 'create' ? styles.createMenuItem : ''
+              }))}
+              theme="light"
+            />
+            
+            <div className={styles.headerRight}>
+              <Button
+                type="text"
+                icon={<TranslationOutlined />}
+                className={styles.langButton}
                 onClick={() => {
                   dispatch(nextLanguage())
                   navigate(0)
                 }}
-              >
-                <Avatar style={{ background: 'none', color: '#eee' }} icon={<TranslationOutlined />} />
-              </a>
-              {/* 相册集和后台入口已隐藏 */}
+              />
+              {isLogged && (
+                <Link to="/admin">
+                  <Button type="text" icon={<PoweroffOutlined />} className={styles.adminButton} />
+                </Link>
+              )}
             </div>
           </AntLayout.Header>
           <AntLayout.Content className={styles.content}>{outlet}</AntLayout.Content>

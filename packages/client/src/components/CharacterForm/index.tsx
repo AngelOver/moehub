@@ -76,7 +76,7 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
     children: (
       <>
         <Form.Item name="name" label={t`com.characterForm.name`} rules={[{ required: true }]}>
-          <Input disabled={isDisabled} placeholder="请输入角色名称" />
+          <Input disabled={isDisabled} placeholder="请输入角色名称" variant="outlined" />
         </Form.Item>
         
         <Form.Item
@@ -101,11 +101,11 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
         </Form.Item>
         
         <Form.Item name="md" label="角色设定" rules={[{ required: true, message: '请输入角色设定内容' }]}>
-          <Input.TextArea rows={6} placeholder="请输入角色设定内容，该内容会被保存为Markdown格式" />
+          <Input.TextArea rows={6} placeholder="请输入角色设定内容，该内容会被保存为Markdown格式"  variant="outlined" />
         </Form.Item>
         
-        <Form.Item name="romaji" label={t`com.characterForm.romaji`}>
-          <Input placeholder="请输入罗马音（选填）" />
+        <Form.Item name="tags" label="标签">
+          <Select mode="tags" options={tags ?? []} />
         </Form.Item>
       </>
     )
@@ -122,8 +122,12 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
             <Radio.Button value="OTHER">{t`com.characterForm.gender.other`}</Radio.Button>
           </Radio.Group>
         </Form.Item>
+        <Form.Item name="romaji" label={t`com.characterForm.romaji`}>
+          <Input placeholder="请输入罗马音（选填）" variant="outlined" />
+        </Form.Item>
+        
         <Form.Item name="series" label={t`com.characterForm.series`}>
-          <Input />
+          <Input variant="outlined" />
         </Form.Item>
         <Form.Item name="seriesGenre" label={t`com.characterForm.seriesGenre`} initialValue="OTHER">
           <Radio.Group>
@@ -139,19 +143,16 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
           <Select mode="tags" />
         </Form.Item>
         <Form.Item name="description" label={t`com.characterForm.description`}>
-          <Input.TextArea rows={3} />
+          <Input.TextArea rows={3}  variant="outlined" />
         </Form.Item>
         <Form.Item name="hitokoto" label={t`com.characterForm.hitokoto`}>
-          <Input />
+          <Input variant="outlined" />
         </Form.Item>
         <Form.Item name="birthday" label={t`com.characterForm.birthday`}>
           <DatePicker format="MM-DD" />
         </Form.Item>
         <Form.Item name="comment" label={t`com.characterForm.comment`}>
-          <Input.TextArea rows={3} />
-        </Form.Item>
-        <Form.Item name="tags" label={t`com.characterForm.tags`}>
-          <Select mode="tags" options={tags ?? []} />
+          <Input.TextArea rows={3}  variant="outlined" />
         </Form.Item>
         <Form.Item name="color" label={t`com.characterForm.color`}>
           <ColorPicker showText allowClear />
@@ -168,7 +169,7 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
     children: (
       <>
         <Form.Item name="voice" label={t`com.characterForm.voice`}>
-          <Input />
+          <Input variant="outlined" />
         </Form.Item>
         <Form.Item name="age" label={t`com.characterForm.age`} rules={[{ type: 'number' }]}>
           <InputNumber min={1} />
@@ -189,10 +190,10 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
           <InputNumber min={1} />
         </Form.Item>
         <Form.Item name="hairColor" label={t`com.characterForm.hairColor`}>
-          <Input />
+          <Input variant="outlined" />
         </Form.Item>
         <Form.Item name="eyeColor" label={t`com.characterForm.eyeColor`}>
-          <Input />
+          <Input variant="outlined" />
         </Form.Item>
         <Form.Item name="bloodType" label={t`com.characterForm.bloodType`}>
           <Radio.Group>
@@ -256,15 +257,16 @@ const CharacterForm: React.FC<CharacterFormProps> = ({ onSubmit, data }) => {
   const imageUploadProps: UploadProps = {
     name: 'file',
     multiple: true,
-    action: `${handleUrl()}/settings/imgs`,
+    // 直接使用代理后的API路径
+    action: `/api/settings/imgs`,
     headers: {
       Authorization: `Bearer ${token}`
     },
     fileList,
     beforeUpload: (file) => {
-      const isPNG = file.type.startsWith('image/')
-      if (!isPNG) notification.error({ message: `${file.name} 不是图片文件!` })
-      return isPNG || Upload.LIST_IGNORE
+      const isImage = file.type.startsWith('image/')
+      if (!isImage) notification.error({ message: `${file.name} 不是图片文件!` })
+      return isImage || Upload.LIST_IGNORE
     },
     onChange(info) {
       let newFileList = [...info.fileList];
@@ -294,7 +296,11 @@ const CharacterForm: React.FC<CharacterFormProps> = ({ onSubmit, data }) => {
       if (status === 'done') {
         notification.success({ message: `${info.file.name} 上传成功!` });
       } else if (status === 'error') {
-        notification.error({ message: `${info.file.name} 上传失败!` });
+        console.error('上传失败详情:', info.file.error, info.file.response);
+        notification.error({
+          message: `${info.file.name} 上传失败!`,
+          description: info.file.response?.message || '服务器内部错误，请检查网络或联系管理员'
+        });
       }
     }
   };
