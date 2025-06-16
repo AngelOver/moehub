@@ -10,6 +10,7 @@ import type Auth from '../utils/auth'
 import type Logger from '../utils/logger'
 import HttpError from './error'
 import type SettingsService from '../router/service/settings.service'
+import type ExportService from '../router/service/export.service'
 import serve from 'koa-static'
 import config from '../config'
 import koaBody from 'koa-body'
@@ -95,7 +96,8 @@ export class Application {
     serverFactory: (...args: ConstructorParameters<typeof InversifyKoaServer>) => InversifyKoaServer,
     @inject(Symbols.Bot) bot: Bot,
     @inject(Symbols.Logger) logger: Logger,
-    @inject(Symbols.SettingsService) settingsService: SettingsService
+    @inject(Symbols.SettingsService) settingsService: SettingsService,
+    @inject(Symbols.ExportService) exportService: ExportService
   ) {
     this.server = serverFactory(container, undefined, { rootPath: '/api' })
     this.bot = bot
@@ -106,6 +108,13 @@ export class Application {
     this.listen = this.instance.listen.bind(this.instance)
     ;(async () => {
       bot.ctx.emit('emailSettingsChange', await settingsService.get(true))
+      // 项目启动时自动生成JSON文件
+      try {
+        await exportService.generateJsonFile()
+        logger.info('角色数据JSON文件自动生成完成')
+      } catch (error) {
+        logger.error('自动生成JSON文件失败:', error)
+      }
     })()
   }
 }

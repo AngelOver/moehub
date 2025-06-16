@@ -1,4 +1,5 @@
 import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout } from 'antd'
+import { UserOutlined, FireOutlined } from '@ant-design/icons'
 import React, { useState, useMemo, useEffect } from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
@@ -17,7 +18,8 @@ const { Title } = Typography
 const { Sider, Content } = Layout;
 
 const HomeView: React.FC = () => {
-  const { data, error, isLoading } = useSWR('/api/character', getCharacters)
+  const sortBy = 'downloadCount' // 固定按下载量排序
+  const { data, error, isLoading } = useSWR(`/api/character?sortBy=${sortBy}`, () => getCharacters(sortBy))
   // 只保留实际使用的settings
   useSelector(getSettings)
   // 获取管理员Token，用于判断是否显示添加按钮
@@ -101,6 +103,7 @@ const HomeView: React.FC = () => {
     setSearchText(value)
   }
 
+
   // 过滤角色列表
   const filteredCharacters = useMemo(() => {
     if (!data) return []
@@ -122,8 +125,7 @@ const HomeView: React.FC = () => {
         
         return basicFilter && tagFilter && searchFilter
       })
-      .reverse()
-      .sort((a, b) => (a.order ?? 50) - (b.order ?? 50))
+      // 移除前端重新排序，保持后端排序结果
   }, [data, selectedTags, searchText])
 
   if (isLoading) return <Loading />
@@ -177,6 +179,7 @@ const HomeView: React.FC = () => {
             />
           </div>
           
+          
           {/* 菜单 */}
           <Menu
             mode="inline"
@@ -224,6 +227,7 @@ const HomeView: React.FC = () => {
               </Button>
             </div>
           )}
+          
         </Sider>
         
         {/* 右侧内容区域 */}
@@ -236,18 +240,25 @@ const HomeView: React.FC = () => {
                     <Card
                       hoverable
                       className={styles.characterCard}
-                      cover={<Image src={(item.images as string[])[0]} className={styles.characterImage} alt={item.romaji} />}
                     >
-                      <br />
+                      {/* 下载数显示 - 右上角 */}
+                      {(item as any).downloadCount > 0 && (
+                        <div className={styles.downloadBadge}>
+                          <FireOutlined className={styles.fireIcon} />
+                          <span className={styles.downloadCount}>{(item as any).downloadCount}</span>
+                        </div>
+                      )}
+                      
+                      <Image
+                        src={(item.images as string[])[0]}
+                        className={styles.characterImage}
+                        alt={item.romaji}
+                        preview={false}
+                        fallback="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%20viewBox='0%200%2024%2024'%20fill='%23f8bbd0'%3e%3cpath%20d='M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z'/%3e%3c/svg%3e"
+                      />
                       <Card.Meta
                         title={item.name}
-                        description={
-                          item.description
-                            ? item.description.length > 70
-                              ? `${item.description.slice(0, 67)} ...`
-                              : item.description
-                            : ''
-                        }
+                        description={item.description || ''}
                       />
                     </Card>
                   </Link>

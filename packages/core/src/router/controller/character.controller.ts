@@ -28,7 +28,9 @@ class CharacterController implements interfaces.Controller {
 
   @httpGet('/')
   public async getAll(@response() res: Response) {
-    res.body = await this.service.getAll()
+    // 从查询参数获取排序方式
+    const sortBy = res.ctx?.query?.sortBy as 'downloadCount' | 'createdAt' | 'order' | undefined;
+    res.body = await this.service.getAll(sortBy)
   }
 
   @httpPost('/')
@@ -73,6 +75,17 @@ class CharacterController implements interfaces.Controller {
   public async toggleHide(@requestParam('id') id: string, @requestBody() body: unknown, @response() res: Response) {
     const { hide } = body as { hide: boolean };
     await this.service.toggleHide(Number(id), hide);
+    res.status = 204;
+  }
+
+  /**
+   * 记录角色下载
+   * @param id 角色ID
+   * @param res 响应对象
+   */
+  @httpPost('/:id/download')
+  public async recordDownload(@requestParam('id') id: string, @response() res: Response) {
+    await this.service.recordDownload(Number(id));
     res.status = 204;
   }
 }

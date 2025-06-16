@@ -37,6 +37,7 @@ model Character {
   order       Int                       @default(50)
   songId      Int?
   weight      Int?
+  downloadCount Int                     @default(0)
   collections CharacterWithCollection[]
 
   @@unique([id, name])

@@ -18,8 +18,9 @@ export async function getCharacter(id: number): Promise<MoehubApiCharacter['data
   return (await http.get(`/character/${id}`)).data
 }
 
-export async function getCharacters(): Promise<MoehubApiCharacters['data']> {
-  return (await http.get('/character')).data
+export async function getCharacters(sortBy?: 'downloadCount' | 'createdAt' | 'order'): Promise<MoehubApiCharacters['data']> {
+  const params = sortBy ? { sortBy } : {};
+  return (await http.get('/character', { params })).data
 }
 
 export function createCharacter(character: MoehubDataCharacterSubmit, md?: string): Promise<MoehubApiBase<201>> {
@@ -88,4 +89,27 @@ export async function postEmail() {
 
 export async function getCharacterMd(id: number): Promise<string> {
   return (await http.get(`/character/${id}/md`)).data
+}
+
+export function recordCharacterDownload(id: number): Promise<MoehubApiBase<204>> {
+  return http.post(`/character/${id}/download`)
+}
+
+// 导出相关API
+export async function getExportStats(): Promise<{
+  totalCharacters: number
+  visibleCharacters: number
+  lastGenerated: string | null
+  fileExists: boolean
+  needsRegeneration: boolean
+}> {
+  return (await http.get('/export/stats')).data
+}
+
+export function downloadCharactersJson(): string {
+  return `${http.defaults.baseURL}/export/characters.json`
+}
+
+export async function regenerateJson(): Promise<{ message: string }> {
+  return (await http.get('/export/regenerate')).data
 }

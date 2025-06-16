@@ -5,7 +5,7 @@ import Loading from '@/components/Loading'
 import ErrorResult from '@/components/result/error'
 import styles from './styles.module.css'
 import useSWR from 'swr'
-import { getCharacter, getCharacterMd } from '@/http'
+import { getCharacter, getCharacterMd, recordCharacterDownload } from '@/http'
 import { useSelector } from 'react-redux'
 import { getSettings } from '@/store/settingsReducer'
 import { useEffect, useState, useRef } from 'react'
@@ -108,6 +108,14 @@ const CharacterView: React.FC = () => {
       // 清理
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
+      
+      // 记录下载
+      try {
+        await recordCharacterDownload(Number(characterId))
+      } catch (err) {
+        console.error('记录下载失败:', err)
+        // 下载记录失败不影响用户体验，只记录错误
+      }
       
       message.success(t`view.character.downloadSuccess`)
     } catch (err) {

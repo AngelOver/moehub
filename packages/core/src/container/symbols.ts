@@ -20,7 +20,9 @@ export const Symbols = {
   CollectionController: 'CollectionController',
   CollectionService: Symbol.for('CollectionService'),
   SettingsController: 'SettingsController',
-  SettingsService: Symbol.for('SettingsService')
+  SettingsService: Symbol.for('SettingsService'),
+  ExportController: 'ExportController',
+  ExportService: Symbol.for('ExportService')
 }
 
 export default Symbols

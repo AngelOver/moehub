@@ -20,6 +20,8 @@ import CollectionService from '../router/service/collection.service'
 import CollectionController from '../router/controller/collection.controller'
 import SettingsController from '../router/controller/settings.controller'
 import SettingsService from '../router/service/settings.service'
+import ExportController from '../router/controller/export.controller'
+import ExportService from '../router/service/export.service'
 
 declare module '@kotori-bot/core' {
   interface Context {
@@ -100,6 +102,9 @@ const routerContainerModule = new ContainerModule((bind) => {
   /* Settings Router */
   bind<interfaces.Controller>(TYPE.Controller).to(SettingsController).whenTargetNamed(Symbols.SettingsController)
   bind(Symbols.SettingsService).to(SettingsService)
+  /* Export Router */
+  bind<interfaces.Controller>(TYPE.Controller).to(ExportController).whenTargetNamed(Symbols.ExportController)
+  bind(Symbols.ExportService).to(ExportService)
 })
 
 export default [routerContainerModule, commonContainerModule]

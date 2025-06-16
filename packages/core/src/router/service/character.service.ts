@@ -34,11 +34,21 @@ export class CharacterService {
     return result
   }
 
-  public async getAll(): Promise<MoehubDataCharacter[]> {
+  public async getAll(sortBy?: 'downloadCount' | 'createdAt' | 'order'): Promise<MoehubDataCharacter[]> {
+    // 设置排序选项
+    const orderBy = sortBy === 'downloadCount'
+      ? { downloadCount: 'desc' as const }
+      : sortBy === 'createdAt'
+      ? { createdAt: 'desc' as const }
+      : { order: 'asc' as const };
+
     // Get all characters with its collections
     return (
       await Promise.all(
-        (await this.db.character.findMany({ include: { collections: true } }))?.map((data) => this.getDataHandle(data))
+        (await this.db.character.findMany({
+          include: { collections: true },
+          orderBy
+        }))?.map((data) => this.getDataHandle(data))
       )
     ).filter((data) => data !== null)
   }
@@ -253,6 +263,26 @@ export class CharacterService {
     };
     
     return genreMap[seriesGenre] || seriesGenre;
+  }
+
+  /**
+   * 记录角色下载
+   * @param id 角色ID
+   */
+  public async recordDownload(id: number) {
+    /* 检查角色是否存在 */
+    const character = await this.db.character.findFirst({ where: { id } });
+    if (!character) throw new HttpError('Character not found', 404);
+    
+    /* 增加下载计数 */
+    await this.db.character.update({
+      where: { id },
+      data: {
+        downloadCount: {
+          increment: 1
+        }
+      }
+    });
   }
 }
 
