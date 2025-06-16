@@ -11,4 +11,5 @@ services:
       # 移除静态文件挂载，避免覆盖容器内的静态文件
       - ./.env:/app/.env  # 挂载根目录的环境变量文件
       - ./.env:/app/packages/core/.env  # 挂载到core目录的环境变量文件
+      - ./uploads:/app/packages/core/public/imgs  # 挂载图片上传目录，持久化存储
     restart: unless-stopped
