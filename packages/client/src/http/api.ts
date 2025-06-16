@@ -83,6 +83,14 @@ export async function getImgs(): Promise<string[]> {
   return (await http.get('/settings/imgs')).data
 }
 
+export async function uploadGuestImgs(formData: FormData): Promise<any> {
+  return (await http.post('/settings/imgs/guest', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })).data
+}
+
 export async function postEmail() {
   return (await http.post('/settings/email')).data
 }

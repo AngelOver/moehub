@@ -79,6 +79,32 @@ class SettingsController implements interfaces.Controller {
   public imgsGey(@response() res: Response) {
     res.body = this.service.allImages()
   }
+
+  @httpPost(
+    '/imgs/guest',
+    koaBody({
+      multipart: true,
+      formidable: {
+        uploadDir: config.uploadDir,
+        keepExtensions: true,
+        filename: (_, ext) => `${randomUUID()}${ext}`,
+        filter: (part) => part.mimetype?.startsWith('image/') || false
+      }
+    })
+  )
+  public imgsGuestPost(ctx: Context) {
+    const file = ctx.request.files?.file
+    if (!file) {
+      ctx.response.status = 400
+      return
+    }
+    ctx.body = (Array.isArray(file) ? file : [file]).map((file) => ({
+      filename: file.newFilename,
+      originalname: file.originalFilename,
+      mimetype: file.mimetype,
+      size: file.size
+    }))
+  }
 }
 
 export default SettingsController

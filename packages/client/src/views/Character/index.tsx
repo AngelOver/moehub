@@ -189,11 +189,28 @@ ${character.hitokoto ? `## 一言\n「${character.hitokoto}」` : ''}
           {data.images && data.images.length > 1 ? (
             <Carousel arrows draggable fade infinite autoplay>
               {data.images.map((item, index) => (
-                <Image className={styles.content} src={item} key={Number(index)} />
+                <Image
+                  className={styles.content}
+                  src={item}
+                  key={Number(index)}
+                  fallback="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%20viewBox='0%200%2024%2024'%20fill='%23f8bbd0'%3e%3cpath%20d='M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z'/%3e%3c/svg%3e"
+                />
               ))}
             </Carousel>
-          ) : null}
-          {data.images && data.images.length === 1 ? <Image className={styles.content} src={data.images[0]} /> : null}
+          ) : data.images && data.images.length === 1 ? (
+            <Image
+              className={styles.content}
+              src={data.images[0]}
+              fallback="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%20viewBox='0%200%2024%2024'%20fill='%23f8bbd0'%3e%3cpath%20d='M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z'/%3e%3c/svg%3e"
+            />
+          ) : (
+            <div className={styles.defaultImageContainer}>
+              <div className={styles.defaultImage}>
+                <div className={styles.defaultImageIcon}>📷</div>
+                <div className={styles.defaultImageText}>暂无图片</div>
+              </div>
+            </div>
+          )}
           <div className={styles.characterNameCard} style={data.color ? { color: `#${data.color}` } : {}}>
             <div>{data.name}</div>
             <div>{data.romaji}</div>

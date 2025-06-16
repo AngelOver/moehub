@@ -257,11 +257,11 @@ const CharacterForm: React.FC<CharacterFormProps> = ({ onSubmit, data }) => {
   const imageUploadProps: UploadProps = {
     name: 'file',
     multiple: true,
-    // 直接使用代理后的API路径
-    action: `/api/settings/imgs`,
-    headers: {
+    // 游客使用不需要认证的接口，管理员使用需要认证的接口
+    action: token ? `/api/settings/imgs` : `/api/settings/imgs/guest`,
+    headers: token ? {
       Authorization: `Bearer ${token}`
-    },
+    } : {},
     fileList,
     beforeUpload: (file) => {
       const isImage = file.type.startsWith('image/')
