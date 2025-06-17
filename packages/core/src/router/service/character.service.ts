@@ -54,10 +54,6 @@ export class CharacterService {
   }
 
   public async create(data: MoehubDataCharacterSubmit, md?: string) {
-    /* Check if character with same name already exists */
-    if (await this.db.character.findFirst({ where: { name: data.name } }))
-      throw new HttpError('Character with same name already exists')
-
     /* Check if collections exists */
     const collectionsId = data.collections
       ? await Promise.all(
@@ -101,10 +97,6 @@ export class CharacterService {
   public async update(id: number, data: MoehubDataCharacterSubmit) {
     /* Check if character exists */
     if (!(await this.db.character.findFirst({ where: { id } }))) throw new HttpError('Character not found', 404)
-
-    /* Check if character with same name already exists */
-    if (await this.db.character.findFirst({ where: { name: data.name, id: { not: id } } }))
-      throw new HttpError('Character with same name already exists')
 
     // biome-ignore lint:
     delete data.collections
