@@ -105,7 +105,28 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
         </Form.Item>
         
         <Form.Item name="tags" label="标签">
-          <Select mode="tags" options={tags ?? []} />
+          <Select
+            mode="tags"
+            placeholder="选择或输入标签"
+            options={[
+              // 首页固定标签
+              { label: '女性向', value: '女性向' },
+              { label: '男性向', value: '男性向' },
+              { label: '热门', value: '热门' },
+              { label: '原创', value: '原创' },
+              { label: '其它', value: '其它' },
+              // 分隔符
+              { label: '————————', value: '', disabled: true },
+              // 现有标签
+              ...(tags ?? [])
+            ]}
+            filterOption={(input, option) => {
+              if ((option as any)?.disabled) return false;
+              return (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }}
+            showSearch
+            allowClear
+          />
         </Form.Item>
       </>
     )
@@ -228,9 +249,15 @@ const CharacterForm: React.FC<CharacterFormProps> = ({ onSubmit, data }) => {
 
   useEffect(() => {
     if (data) {
-      form.setFieldsValue(
-        (data.birthday ? { ...data, birthday: dayjs(data.birthday) } : data) as unknown as MoehubDataCharacterHandle
-      )
+      // 处理表单数据，包含MD内容
+      const formData = {
+        ...data,
+        birthday: data.birthday ? dayjs(data.birthday) : undefined,
+        md: (data as any).md || '' // 确保MD字段被正确设置
+      } as unknown as MoehubDataCharacterHandle;
+      
+      form.setFieldsValue(formData);
+      console.log('设置表单数据:', formData);
       
       // 如果有images数据，转换为UploadFile格式
       if (data.images && data.images.length > 0) {
@@ -245,6 +272,8 @@ const CharacterForm: React.FC<CharacterFormProps> = ({ onSubmit, data }) => {
           } as UploadFile;
         });
         setFileList(initialFileList);
+        // 同时设置到表单中
+        form.setFieldsValue({ uploadedImages: initialFileList });
       }
     }
   }, [form, data])

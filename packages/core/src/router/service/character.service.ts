@@ -94,7 +94,7 @@ export class CharacterService {
     return 201
   }
 
-  public async update(id: number, data: MoehubDataCharacterSubmit) {
+  public async update(id: number, data: MoehubDataCharacterSubmit, md?: string) {
     /* Check if character exists */
     if (!(await this.db.character.findFirst({ where: { id } }))) throw new HttpError('Character not found', 404)
 
@@ -106,6 +106,22 @@ export class CharacterService {
         ...(this.db.characterDataStringify(data) as Omit<ReturnType<Database['characterDataStringify']>, 'collections'>)
       }
     })
+
+    /* 更新角色设定MD内容 */
+    if (md !== undefined) {
+      try {
+        console.log('更新角色设定MD内容, 角色ID:', id);
+        await this.db.characterMd.upsert({
+          where: { id },
+          update: { md },
+          create: { id, md }
+        });
+        console.log('角色设定MD内容更新成功');
+      } catch (error) {
+        console.error('更新角色设定MD内容失败:', error);
+        // MD更新失败不影响角色更新的整体流程
+      }
+    }
   }
 
   public async remove(id: number) {

@@ -27,8 +27,8 @@ export function createCharacter(character: MoehubDataCharacterSubmit, md?: strin
   return http.post('/character', { ...character, md })
 }
 
-export function updateCharacter(id: number, character: MoehubDataCharacterSubmit): Promise<MoehubApiBase<204>> {
-  return http.put(`/character/${id}`, character)
+export function updateCharacter(id: number, character: MoehubDataCharacterSubmit, md?: string): Promise<MoehubApiBase<204>> {
+  return http.put(`/character/${id}`, { ...character, md })
 }
 
 export function deleteCharacter(id: number): Promise<MoehubApiBase<204>> {

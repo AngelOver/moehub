@@ -1,4 +1,4 @@
-import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout } from 'antd'
+import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout, Alert } from 'antd'
 import { UserOutlined, FireOutlined } from '@ant-design/icons'
 import React, { useState, useMemo, useEffect } from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
@@ -20,8 +20,8 @@ const { Sider, Content } = Layout;
 const HomeView: React.FC = () => {
   const sortBy = 'downloadCount' // 固定按下载量排序
   const { data, error, isLoading } = useSWR(`/api/character?sortBy=${sortBy}`, () => getCharacters(sortBy))
-  // 只保留实际使用的settings
-  useSelector(getSettings)
+  // 获取设置信息
+  const settings = useSelector(getSettings)
   // 获取管理员Token，用于判断是否显示添加按钮
   const token = useSelector(getToken)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -232,6 +232,24 @@ const HomeView: React.FC = () => {
         
         {/* 右侧内容区域 */}
         <Content className={styles.contentArea}>
+          {/* 公告栏 */}
+          {settings.home_description && (
+            <div style={{ marginBottom: '16px' }}>
+              <Alert
+                message={settings.home_description}
+                type="info"
+                showIcon
+                icon={<span style={{ fontSize: '16px' }}>📢</span>}
+                closable
+                style={{
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  padding: '12px 16px'
+                }}
+              />
+            </div>
+          )}
+          
           <div className={styles.characterListContainer}>
             <Row gutter={[16, 16]} className={styles.characterList}>
               {filteredCharacters.map((item) => (

@@ -43,8 +43,10 @@ class CharacterController implements interfaces.Controller {
 
   @httpPut('/:id', Auth.middleware())
   public async put(@requestParam('id') id: string, @requestBody() body: unknown, @response() res: Response) {
-    const data = characterSchema.parse(body)
-    await this.service.update(Number(id), data)
+    // 从请求体中提取md内容
+    const { md, ...characterData } = body as { md?: string } & Record<string, unknown>
+    const data = characterSchema.parse(characterData)
+    await this.service.update(Number(id), data, md)
     res.status = 204
   }
 
