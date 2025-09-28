@@ -6,10 +6,7 @@ WORKDIR /app
 
 # 一次性安装所有依赖和工具，减少层数
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends openssl ca-certificates wget \
-    && wget -O /tmp/libssl1.1.deb http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1n-0+deb10u6_amd64.deb \
-    && dpkg -i /tmp/libssl1.1.deb \
-    && rm -f /tmp/libssl1.1.deb \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g pnpm
@@ -25,9 +22,9 @@ RUN pnpm install
 COPY . .
 RUN cd packages/core && npx prisma generate \
     && cd /app \
-    && pnpm common build \
-    && pnpm core build \
-    && pnpm client build
+    && pnpm --filter @moehub/common build \
+    && pnpm --filter moehub build \
+    && pnpm --filter @moehub/client build
     
 # 确保前端配置使用相对路径API
 RUN echo "确保前端配置使用相对路径API"
@@ -35,12 +32,9 @@ RUN echo "确保前端配置使用相对路径API"
 # 生产阶段 - 使用更小的基础镜像
 FROM node:lts-slim AS production
 
-# 安装libssl1.1（不需要nginx）
+# 安装基础依赖
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends openssl ca-certificates wget \
-    && wget -O /tmp/libssl1.1.deb http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1n-0+deb10u6_amd64.deb \
-    && dpkg -i /tmp/libssl1.1.deb \
-    && rm -f /tmp/libssl1.1.deb \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g pnpm
