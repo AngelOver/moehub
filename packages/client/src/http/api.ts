@@ -121,3 +121,8 @@ export function downloadCharactersJson(): string {
 export async function regenerateJson(): Promise<{ message: string }> {
   return (await http.get('/export/regenerate')).data
 }
+
+// 点赞相关API
+export function likeCharacter(id: number): Promise<MoehubApiBase<200>> {
+  return http.post(`/character/${id}/like`)
+}

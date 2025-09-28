@@ -38,6 +38,7 @@ model Character {
   songId      Int?
   weight      Int?
   downloadCount Int                     @default(0)
+  likeCount     Int                     @default(0)
   collections CharacterWithCollection[]
 
   @@unique([id, name])

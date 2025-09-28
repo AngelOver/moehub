@@ -1,9 +1,9 @@
-import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout, Alert } from 'antd'
-import { UserOutlined, FireOutlined } from '@ant-design/icons'
+import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout, Alert, message } from 'antd'
+import { UserOutlined, FireOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons'
 import React, { useState, useMemo, useEffect } from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import { getCharacters } from '@/http/index'
+import { getCharacters, likeCharacter } from '@/http/index'
 import Loading from '@/components/Loading'
 import ErrorResult from '@/components/result/error'
 import styles from './styles.module.css'
@@ -28,6 +28,8 @@ const HomeView: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [mobileMenuCollapsed, setMobileMenuCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [likedCharacters, setLikedCharacters] = useState<Set<number>>(new Set())
+  const [likeCounts, setLikeCounts] = useState<Record<number, number>>({})
   
   // 监听窗口大小变化
   useEffect(() => {
@@ -44,6 +46,22 @@ const HomeView: React.FC = () => {
     // 清理函数
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
+
+  // 初始化点赞状态
+  useEffect(() => {
+    if (data) {
+      // 从 localStorage 读取已点赞的角色
+      const liked = JSON.parse(localStorage.getItem('likedCharacters') || '[]')
+      setLikedCharacters(new Set(liked))
+      
+      // 初始化点赞数量
+      const counts: Record<number, number> = {}
+      data.forEach(character => {
+        counts[character.id] = (character as any).likeCount || 0
+      })
+      setLikeCounts(counts)
+    }
+  }, [data])
 
   // 固定五个分类，排序不变
   const allTags = useMemo(() => {
@@ -101,6 +119,52 @@ const HomeView: React.FC = () => {
   
   const handleSearch = (value: string) => {
     setSearchText(value)
+  }
+
+  // 点赞处理
+  const handleLike = async (characterId: number, event: React.MouseEvent) => {
+    event.preventDefault() // 阻止链接跳转
+    event.stopPropagation()
+    
+    if (likedCharacters.has(characterId)) {
+      message.info('您已经点赞过这个角色了')
+      return
+    }
+    
+    try {
+      // 先更新UI，提供即时反馈
+      const newLikedCharacters = new Set(likedCharacters)
+      newLikedCharacters.add(characterId)
+      setLikedCharacters(newLikedCharacters)
+      
+      // 更新点赞数
+      setLikeCounts(prev => ({
+        ...prev,
+        [characterId]: (prev[characterId] || 0) + 1
+      }))
+      
+      // 保存到 localStorage
+      localStorage.setItem('likedCharacters', JSON.stringify(Array.from(newLikedCharacters)))
+      
+      // 调用API（后台处理）
+      await likeCharacter(characterId)
+      
+      message.success('点赞成功！')
+    } catch (error) {
+      console.error('点赞失败:', error)
+      // 如果API失败，回滚状态
+      const revertedLikedCharacters = new Set(likedCharacters)
+      revertedLikedCharacters.delete(characterId)
+      setLikedCharacters(revertedLikedCharacters)
+      
+      setLikeCounts(prev => ({
+        ...prev,
+        [characterId]: Math.max((prev[characterId] || 1) - 1, 0)
+      }))
+      
+      localStorage.setItem('likedCharacters', JSON.stringify(Array.from(revertedLikedCharacters)))
+      message.error('点赞失败，请稍后再试')
+    }
   }
 
 
@@ -258,6 +322,7 @@ const HomeView: React.FC = () => {
                     <Card
                       hoverable
                       className={styles.characterCard}
+                      style={{ position: 'relative' }}
                     >
                       {/* 下载数显示 - 右上角 */}
                       {(item as any).downloadCount > 0 && (
@@ -278,6 +343,42 @@ const HomeView: React.FC = () => {
                         title={item.name}
                         description={item.description || ''}
                       />
+                      
+                      {/* 点赞按钮 - 右下角 */}
+                      <div 
+                        style={{ 
+                          position: 'absolute', 
+                          bottom: '8px', 
+                          right: '8px', 
+                          zIndex: 10
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleLike(item.id, e)
+                        }}
+                      >
+                        <Button
+                          type="text"
+                          size="small"
+                          icon={likedCharacters.has(item.id) ? <LikeFilled style={{ color: '#1890ff' }} /> : <LikeOutlined />}
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '6px',
+                            padding: '4px 8px',
+                            height: 'auto',
+                            fontSize: '12px',
+                            background: 'rgba(248, 187, 208, 0.3)',
+                            borderRadius: '12px',
+                            border: 'none',
+                            color: '#333',
+                            pointerEvents: 'none'
+                          }}
+                        >
+                          {likeCounts[item.id] || 0}
+                        </Button>
+                      </div>
                     </Card>
                   </Link>
                 </Col>

@@ -292,6 +292,26 @@ export class CharacterService {
       }
     });
   }
+
+  /**
+   * 角色点赞
+   * @param id 角色ID
+   */
+  public async likeCharacter(id: number) {
+    /* 检查角色是否存在 */
+    const character = await this.db.character.findFirst({ where: { id } });
+    if (!character) throw new HttpError('Character not found', 404);
+    
+    /* 增加点赞计数 */
+    await this.db.character.update({
+      where: { id },
+      data: {
+        likeCount: {
+          increment: 1
+        }
+      }
+    });
+  }
 }
 
 export default CharacterService

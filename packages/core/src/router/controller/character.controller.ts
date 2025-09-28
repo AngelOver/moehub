@@ -90,6 +90,18 @@ class CharacterController implements interfaces.Controller {
     await this.service.recordDownload(Number(id));
     res.status = 204;
   }
+
+  /**
+   * 角色点赞
+   * @param id 角色ID
+   * @param res 响应对象
+   */
+  @httpPost('/:id/like')
+  public async likeCharacter(@requestParam('id') id: string, @response() res: Response) {
+    await this.service.likeCharacter(Number(id));
+    res.body = { success: true, message: '点赞成功' };
+    res.status = 200;
+  }
 }
 
 export default CharacterController
