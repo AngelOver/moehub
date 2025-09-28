@@ -112,6 +112,7 @@ const items = (isDisabled: boolean, tags?: { label: string; value: string }[], i
               // 首页固定标签
               { label: '女性向', value: '女性向' },
               { label: '男性向', value: '男性向' },
+              { label: '指令', value: '指令' },
               { label: '热门', value: '热门' },
               { label: '原创', value: '原创' },
               { label: '其它', value: '其它' },

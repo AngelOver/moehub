@@ -47,10 +47,10 @@ const HomeView: React.FC = () => {
 
   // 固定五个分类，排序不变
   const allTags = useMemo(() => {
-    if (!data) return ['女性向', '男性向', '热门', '原创', '其它']
+    if (!data) return ['女性向', '男性向', '指令', '热门', '原创', '其它']
     
     // 固定的五个标签（按指定顺序）
-    const fixedTags = ['女性向', '男性向', '热门', '原创', '其它'];
+    const fixedTags = ['女性向', '男性向', '指令', '热门', '原创', '其它'];
     const tagSet = new Set<string>(fixedTags);
     
     // 然后添加其他标签
@@ -113,9 +113,9 @@ const HomeView: React.FC = () => {
         // 基本过滤：有图片且不隐藏
         const basicFilter = Array.isArray(item.images) && item.images.length > 0 && !item.hide
         
-        // 标签过滤
+        // 标签过滤 - 改为OR逻辑：角色只要包含任意一个选中标签就显示
         const tagFilter = selectedTags.length === 0 ||
-          (Array.isArray(item.tags) && item.tags && selectedTags.every(tag => item.tags!.includes(tag)))
+          (Array.isArray(item.tags) && item.tags && selectedTags.some(tag => item.tags!.includes(tag)))
         
         // 搜索文本过滤
         const searchFilter = searchText === '' ||
@@ -191,7 +191,7 @@ const HomeView: React.FC = () => {
                 label: '筛选',
                 icon: <FilterOutlined />,
                 children: allTags
-                  .filter(tag => ['女性向', '男性向', '热门', '原创', '其它'].includes(tag))
+                  .filter(tag => ['女性向', '男性向', '指令', '热门', '原创', '其它'].includes(tag))
                   .map((tag) => ({
                     key: tag,
                     label: tag,
@@ -203,7 +203,7 @@ const HomeView: React.FC = () => {
                 key: 'tags',
                 label: '标签',
                 children: allTags
-                  .filter(tag => !['女性向', '男性向', '热门', '原创', '其它'].includes(tag))
+                  .filter(tag => !['女性向', '男性向', '指令', '热门', '原创', '其它'].includes(tag))
                   .map((tag) => ({
                     key: tag,
                     label: tag,
