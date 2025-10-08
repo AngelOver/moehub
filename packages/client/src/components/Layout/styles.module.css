@@ -300,7 +300,7 @@
 
 .content {
   min-height: 120px;
-  line-height: 120px;
+  line-height: normal;
   overflow: initial;
   position: relative;
   animation: fadeIn 0.6s ease-out;

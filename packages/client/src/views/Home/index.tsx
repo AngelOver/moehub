@@ -75,10 +75,10 @@ const HomeView: React.FC = () => {
 
   // 固定五个分类，排序不变
   const allTags = useMemo(() => {
-    if (!data) return ['女性向', '男性向', '指令', '热门', '原创', '其它']
+    if (!data) return ['指令', '女性向', '男性向', '热门', '原创', '其它']
     
     // 固定的五个标签（按指定顺序）
-    const fixedTags = ['女性向', '男性向', '指令', '热门', '原创', '其它'];
+    const fixedTags = ['指令', '女性向', '男性向', '热门', '原创', '其它'];
     const tagSet = new Set<string>(fixedTags);
     
     // 然后添加其他标签
@@ -211,6 +211,25 @@ const HomeView: React.FC = () => {
 
   return (
     <div className={styles.homeContainer}>
+      {/* 移动端切换按钮 - 仅在移动端显示 */}
+      {isMobile && (
+        <div className={styles.mobileCommandButton}>
+          {selectedTags.includes('指令') ? (
+            <Link to="/">
+              <Button type="default">
+                前往角色库
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/?tag=指令">
+              <Button type="default">
+                前往指令集
+              </Button>
+            </Link>
+          )}
+        </div>
+      )}
+
       {/* 移动端菜单折叠按钮 - 仅在移动端显示 */}
       {isMobile && (
         <div className={styles.mobileMenuToggle}>
@@ -265,7 +284,7 @@ const HomeView: React.FC = () => {
                 label: '筛选',
                 icon: <FilterOutlined />,
                 children: allTags
-                  .filter(tag => ['女性向', '男性向', '指令', '热门', '原创', '其它'].includes(tag))
+                  .filter(tag => ['指令', '女性向', '男性向', '热门', '原创', '其它'].includes(tag))
                   .map((tag) => ({
                     key: tag,
                     label: tag,
@@ -277,7 +296,7 @@ const HomeView: React.FC = () => {
                 key: 'tags',
                 label: '标签',
                 children: allTags
-                  .filter(tag => !['女性向', '男性向', '指令', '热门', '原创', '其它'].includes(tag))
+                  .filter(tag => !['指令', '女性向', '男性向', '热门', '原创', '其它'].includes(tag))
                   .map((tag) => ({
                     key: tag,
                     label: tag,

@@ -367,6 +367,40 @@
 
 /* 移动端样式 */
 @media screen and (max-width: 768px) {
+  /* 移动端指令集按钮 - 悬浮样式 */
+  .mobileCommandButton {
+    display: none; /* PC端默认隐藏 */
+    position: fixed;
+    bottom: 85px; /* 在展开筛选按钮上方 */
+    left: 30px;
+    z-index: 1000;
+    transition: all 0.3s;
+  }
+  
+  .mobileCommandButton a {
+    text-decoration: none;
+  }
+  
+  .mobileCommandButton button {
+    background: linear-gradient(45deg, #4285f4, #1976d2);
+    border: none;
+    color: white;
+    height: 40px;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+    transition: all 0.3s;
+    line-height: normal;
+  }
+  
+  .mobileCommandButton:hover {
+    transform: translateY(-2px);
+  }
+
   /* 移动端菜单折叠按钮 - 悬浮样式 */
   .mobileMenuToggle {
     display: none; /* PC端默认隐藏 */
@@ -375,11 +409,6 @@
     left: 30px;
     z-index: 1000;
     transition: all 0.3s;
-    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
-  }
-  
-  .mobileMenuToggle:hover {
-    transform: translateY(-8px);
   }
   
   .mobileMenuToggle button {
@@ -394,6 +423,12 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+    transition: all 0.3s;
+    line-height: normal;
+  }
+  
+  .mobileMenuToggle:hover {
+    transform: translateY(-2px);
   }
   
   .menuSider {
@@ -453,6 +488,10 @@
   
   /* 移动端 - 菜单折叠生效 */
   @media screen and (max-width: 768px) {
+    .mobileCommandButton {
+      display: block; /* 移动端显示指令集按钮 */
+    }
+    
     .mobileMenuToggle {
       display: block; /* 移动端显示折叠按钮 */
     }
