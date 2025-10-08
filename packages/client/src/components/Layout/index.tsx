@@ -1,5 +1,5 @@
 import { Flex, Layout as AntLayout, Avatar, Menu, Button } from 'antd'
-import { PictureOutlined, PoweroffOutlined, TranslationOutlined, PlusOutlined, HomeOutlined, UserAddOutlined } from '@ant-design/icons'
+import { PoweroffOutlined, TranslationOutlined, HomeOutlined, UserAddOutlined, CodeOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import styles from './styles.module.css'
 import { useEffect, useRef, useState } from 'react'
@@ -50,8 +50,18 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
   
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/') setCurrent('home');
-    else if (path === '/create') setCurrent('create');
+    const params = new URLSearchParams(location.search);
+    const tag = params.get('tag');
+    
+    if (path === '/') {
+      if (tag === '指令') {
+        setCurrent('command');
+      } else {
+        setCurrent('home');
+      }
+    } else if (path === '/create') {
+      setCurrent('create');
+    }
   }, [location]);
 
   // 菜单项配置
@@ -59,8 +69,14 @@ const Layout: React.FC<LayoutProps> = ({ title, outlet, isPrivate }) => {
     {
       key: 'home',
       icon: <HomeOutlined />,
-      label: '首页',
+      label: '角色库',
       link: '/'
+    },
+    {
+      key: 'command',
+      icon: <CodeOutlined />,
+      label: '指令集',
+      link: '/?tag=指令'
     },
     {
       key: 'create',

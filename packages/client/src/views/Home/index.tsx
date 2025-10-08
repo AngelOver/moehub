@@ -1,8 +1,7 @@
-import { Flex, Image, Card, Button, Typography, Input, Row, Col, Tooltip, Menu, Layout, Alert, message } from 'antd'
-import { UserOutlined, FireOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons'
+import { Image, Card, Button, Input, Row, Col, Tooltip, Menu, Layout, Alert, message } from 'antd'
+import { FireOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons'
 import React, { useState, useMemo, useEffect } from 'react'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { getCharacters, likeCharacter } from '@/http/index'
 import Loading from '@/components/Loading'
 import ErrorResult from '@/components/result/error'
@@ -14,7 +13,6 @@ import { useSelector } from 'react-redux'
 import { t } from '@/i18n'
 import { SearchOutlined, PlusCircleOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons'
 
-const { Title } = Typography
 const { Sider, Content } = Layout;
 
 const HomeView: React.FC = () => {
@@ -24,6 +22,7 @@ const HomeView: React.FC = () => {
   const settings = useSelector(getSettings)
   // 获取管理员Token，用于判断是否显示添加按钮
   const token = useSelector(getToken)
+  const [searchParams] = useSearchParams()
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [searchText, setSearchText] = useState('')
   const [mobileMenuCollapsed, setMobileMenuCollapsed] = useState(false)
@@ -46,6 +45,17 @@ const HomeView: React.FC = () => {
     // 清理函数
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
+
+  // 监听URL参数变化，自动设置筛选标签
+  useEffect(() => {
+    const tag = searchParams.get('tag')
+    if (tag) {
+      setSelectedTags([tag])
+    } else {
+      // 如果没有tag参数，清空选中的标签
+      setSelectedTags([])
+    }
+  }, [searchParams])
 
   // 初始化点赞状态
   useEffect(() => {
